@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equitie — Global Real Estate Vehicle</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08090c;
+  --surface: #0b0d12;
+  --surface2: #0e1016;
+  --border: rgba(255,255,255,0.035);
+  --border2: rgba(255,255,255,0.06);
+  --text1: #e4e8ee;
+  --text2: #9aa4b4;
+  --text3: #586070;
+  --text4: #3d4555;
+  --text5: #2a3040;
+  --jh: #4a7c6b;
+  --bali: #8a7a4a;
+  --lon: #4a6a8a;
+  --hub: #708098;
+  --accent: #5a6a82;
+  --nav-bg: rgba(8,9,12,0.85);
+  --land-fill: #12151e;
+  --land-stroke: #1a1e28;
+  --grat-stroke: #0d0f16;
+  --map-bg: #0a0c11;
+  --chart-grid: rgba(255,255,255,0.025);
+  --chart-grid-axis: rgba(255,255,255,0.04);
+}
+
+[data-theme="light"] {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #f9fafb;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.13);
+  --text1: #1a1f2e;
+  --text2: #4a5568;
+  --text3: #64748b;
+  --text4: #8895a7;
+  --text5: #94a3b8;
+  --jh: #2d6a4f;
+  --bali: #7c6a2a;
+  --lon: #2c5f8a;
+  --hub: #4a6080;
+  --accent: #5a6a82;
+  --nav-bg: rgba(244,245,247,0.88);
+  --land-fill: #e2e8f0;
+  --land-stroke: #cbd5e0;
+  --grat-stroke: #edf2f7;
+  --map-bg: #f0f2f5;
+  --chart-grid: rgba(0,0,0,0.06);
+  --chart-grid-axis: rgba(0,0,0,0.1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text2);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.nav, .pattern-era, .tw-card, .asset-card, .flow-stage, .timing-card,
+.return-card, .outcome-box, .div-card, .evidence-card, .map-wrap, .theme-toggle {
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ─── NAV ─── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 32px; height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--nav-bg); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: transform 0.3s;
+}
+.nav-logo { font-size: 12px; font-weight: 700; color: var(--text4); letter-spacing: 4px; text-transform: uppercase; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-links { display: flex; gap: 4px; }
+.theme-toggle {
+  width: 36px; height: 20px; border-radius: 10px; border: 1px solid var(--border2);
+  background: var(--surface); cursor: pointer; position: relative;
+  transition: all 0.3s; padding: 0; flex-shrink: 0;
+}
+.theme-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--text4); transition: all 0.3s;
+}
+[data-theme="light"] .theme-toggle::after {
+  left: 18px; background: var(--text2);
+}
+.nav-link {
+  padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 600;
+  color: var(--text4); text-decoration: none; letter-spacing: 0.5px;
+  transition: all 0.2s; cursor: pointer; border: none; background: none;
+}
+.nav-link:hover, .nav-link.active { color: var(--text2); background: rgba(255,255,255,0.03); }
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active { background: rgba(0,0,0,0.04); }
+
+/* ─── LAYOUT ─── */
+.page { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+section { padding: 64px 0 40px; }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  padding: 0 32px; position: relative;
+  background: url('mayfairbuildingroof.jpg') center/cover no-repeat;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(8,9,12,0.88) 0%, rgba(8,9,12,0.78) 50%, rgba(8,9,12,0.92) 100%);
+  z-index: 0;
+}
+[data-theme="light"] .hero::before {
+  background: linear-gradient(180deg, rgba(244,245,247,0.88) 0%, rgba(244,245,247,0.78) 50%, rgba(244,245,247,0.92) 100%);
+}
+.hero > * { position: relative; z-index: 1; }
+.hero-kicker {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 5px; color: var(--text5); margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: 42px; font-weight: 300; color: var(--text1);
+  line-height: 1.2; max-width: 720px; letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+.hero h1 strong { font-weight: 700; }
+.hero .hero-sub {
+  font-size: 16px; color: var(--text3); max-width: 520px;
+  line-height: 1.7; margin-bottom: 48px;
+}
+.hero-scroll {
+  font-size: 10px; color: var(--text5); letter-spacing: 3px;
+  text-transform: uppercase; cursor: pointer; border: none; background: none;
+  padding: 12px 20px; border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.hero-scroll:hover { border-color: var(--border2); color: var(--text4); }
+
+/* ─── SECTION HEADERS ─── */
+.s-kicker {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 4px; color: var(--text5); margin-bottom: 10px;
+}
+.s-title {
+  font-size: 24px; font-weight: 600; color: var(--text1);
+  letter-spacing: -0.3px; margin-bottom: 6px; line-height: 1.25;
+}
+.s-subtitle {
+  font-size: 14px; color: var(--text3); margin-bottom: 24px;
+  max-width: 560px; line-height: 1.6;
+}
+.s-divider {
+  width: 32px; height: 1px; background: var(--border2);
+  margin-bottom: 24px;
+}
+
+/* ─── PATTERN (HISTORICAL) ─── */
+.pattern-timeline {
+  display: flex; gap: 1px; background: var(--border);
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.pattern-era {
+  flex: 1; background: var(--surface); padding: 32px 24px;
+  cursor: pointer; transition: background 0.3s;
+  position: relative;
+}
+.pattern-era:hover { background: var(--surface2); transform: translateY(-1px); }
+.pattern-era.current { background: var(--surface2); }
+.pattern-era .pe-period {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; color: var(--text5); margin-bottom: 14px;
+}
+.pattern-era h3 {
+  font-size: 17px; font-weight: 600; color: var(--text1);
+  margin-bottom: 4px;
+}
+.pattern-era .pe-arrow {
+  font-size: 13px; font-weight: 400; color: var(--text3);
+  margin-bottom: 16px;
+}
+.pattern-era .pe-stat {
+  font-size: 32px; font-weight: 800; color: var(--text1);
+  letter-spacing: -1px; margin-bottom: 2px;
+}
+.pattern-era .pe-stat-label {
+  font-size: 12px; color: var(--text3); font-weight: 500; margin-bottom: 16px;
+}
+.pattern-era .pe-detail {
+  font-size: 11px; color: var(--text3); line-height: 1.6;
+  border-top: 1px solid var(--border); padding-top: 14px;
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s;
+  padding-top: 0;
+}
+.pattern-era.open .pe-detail {
+  max-height: 200px; padding-top: 14px;
+}
+
+.pattern-connector {
+  font-size: 12px; color: var(--text3); text-align: center;
+  padding: 20px 0 0; line-height: 1.7;
+}
+
+/* ─── TAILWINDS ─── */
+.tw-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.tw-card {
+  background: var(--surface); padding: 28px 24px;
+  cursor: pointer; transition: background 0.3s;
+}
+.tw-card:hover { background: var(--surface2); transform: translateY(-1px); }
+.tw-num {
+  font-size: 9px; font-weight: 700; color: var(--text5);
+  letter-spacing: 2px; margin-bottom: 10px; font-variant-numeric: tabular-nums;
+}
+.tw-card h3 {
+  font-size: 14px; font-weight: 600; color: var(--text1);
+  margin-bottom: 8px; line-height: 1.3;
+}
+.tw-card .tw-desc {
+  font-size: 12px; color: var(--text3); line-height: 1.6; margin-bottom: 8px;
+}
+.tw-highlight {
+  font-size: 20px; font-weight: 800; color: var(--text1);
+  letter-spacing: -0.5px; margin-bottom: 2px;
+}
+.tw-highlight-label {
+  font-size: 10px; color: var(--text4); margin-bottom: 10px;
+  font-weight: 500; text-transform: uppercase; letter-spacing: 1px;
+}
+.tw-card .tw-data {
+  font-size: 11px; color: var(--text3); line-height: 1.55;
+  border-top: 1px solid var(--border); padding-top: 10px;
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s, opacity 0.4s;
+  opacity: 0; padding-top: 0;
+}
+.tw-card.open .tw-data { max-height: 300px; padding-top: 10px; opacity: 1; }
+.tw-card .tw-data strong { color: var(--text2); font-weight: 600; }
+.tw-card .tw-impl {
+  font-size: 11px; font-weight: 500; margin-top: 10px;
+}
+
+/* ─── MAP ─── */
+.map-section { padding-bottom: 40px; }
+.map-wrap {
+  border-radius: 12px; overflow: hidden;
+  background: var(--map-bg);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.map-wrap svg { display: block; }
+.land { fill: var(--land-fill); stroke: var(--land-stroke); stroke-width: 0.3; }
+.border-line { fill: none; stroke: var(--land-stroke); stroke-width: 0.2; }
+.graticule { fill: none; stroke: var(--grat-stroke); stroke-width: 0.2; }
+.map-legend-bar {
+  display: flex; gap: 20px; align-items: center;
+  padding: 10px 18px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.ml-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--text4); font-weight: 500; }
+.ml-dot { width: 6px; height: 6px; border-radius: 50%; }
+.ml-diamond { width: 5px; height: 5px; transform: rotate(45deg); border-radius: 1px; }
+.map-tooltip {
+  position: absolute; pointer-events: none; z-index: 10;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 13px; font-size: 11px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  opacity: 0; transition: opacity 0.15s; max-width: 190px; line-height: 1.5;
+}
+.map-tooltip.visible { opacity: 1; }
+.map-tooltip .tt-name { font-weight: 700; color: var(--text1); font-size: 12px; margin-bottom: 2px; }
+.map-tooltip .tt-val { font-weight: 600; }
+
+/* ─── FLOW ─── */
+.flow-wrap {
+  display: flex; gap: 0; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--border);
+}
+.flow-stage {
+  flex: 1; background: var(--surface); padding: 28px 20px; text-align: center;
+  position: relative;
+}
+.flow-stage .fs-num {
+  font-size: 8px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; color: var(--text5); margin-bottom: 12px;
+}
+.flow-stage h4 { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 5px; }
+.flow-stage p { font-size: 11px; color: var(--text3); line-height: 1.5; }
+.flow-chevron {
+  position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+  z-index: 2; color: var(--text5); font-size: 14px; font-weight: 300;
+}
+
+/* ─── ASSETS ─── */
+.assets-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.asset-card {
+  background: var(--surface); padding: 32px 24px;
+  transition: background 0.3s; cursor: pointer;
+}
+.asset-card:hover { background: var(--surface2); transform: translateY(-1px); }
+.asset-card.jh:hover { box-shadow: inset 0 2px 0 0 var(--jh); }
+.asset-card.bali:hover { box-shadow: inset 0 2px 0 0 var(--bali); }
+.asset-card.lon:hover { box-shadow: inset 0 2px 0 0 var(--lon); }
+.asset-card .ac-loc {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 14px;
+}
+.asset-card.jh .ac-loc { color: var(--jh); }
+.asset-card.bali .ac-loc { color: var(--bali); }
+.asset-card.lon .ac-loc { color: var(--lon); }
+.asset-card .ac-name {
+  font-size: 17px; font-weight: 600; color: var(--text1);
+  margin-bottom: 4px; letter-spacing: -0.2px;
+}
+.asset-card .ac-tag {
+  font-size: 12px; color: var(--text3); font-style: italic;
+  margin-bottom: 20px; line-height: 1.5;
+}
+.asset-card .ac-metrics { margin-bottom: 16px; }
+.ac-metric {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+}
+.ac-metric:last-child { border-bottom: none; }
+.ac-metric .acm-l { font-size: 10px; color: var(--text4); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+.ac-metric .acm-v { font-size: 13px; font-weight: 700; color: var(--text1); }
+.asset-card .ac-return {
+  padding: 12px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.012);
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.4s, padding 0.4s;
+  padding: 0 14px;
+}
+.asset-card.open .ac-return {
+  max-height: 250px; opacity: 1; padding: 12px 14px;
+}
+.ac-return .acr-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--text4); margin-bottom: 5px;
+}
+.ac-return .acr-text { font-size: 12px; color: var(--text3); line-height: 1.55; }
+
+/* ─── ASSET CARD IMAGES ─── */
+.ac-img {
+  margin: -32px -24px 20px -24px; height: 180px; overflow: hidden;
+  position: relative;
+}
+.ac-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(0.4); opacity: 0.7;
+  transition: opacity 0.4s ease, transform 0.6s ease, filter 0.4s ease;
+}
+.asset-card:hover .ac-img img {
+  transform: scale(1.03); opacity: 0.85; filter: saturate(0.6);
+}
+[data-theme="light"] .ac-img img { opacity: 0.9; filter: saturate(0.7); }
+[data-theme="light"] .asset-card:hover .ac-img img { opacity: 1; filter: saturate(0.9); }
+[data-theme="light"] .asset-card .ac-return { background: rgba(0,0,0,0.03); }
+
+/* ─── THUMBNAIL STRIPS ─── */
+.thumb-strip {
+  display: flex; gap: 6px; margin-top: 10px;
+}
+.thumb-strip img {
+  width: 48px; height: 32px; object-fit: cover;
+  border-radius: 4px; opacity: 0.5;
+  filter: saturate(0.3);
+  transition: opacity 0.3s, filter 0.3s;
+}
+.thumb-strip img:hover { opacity: 0.8; filter: saturate(0.7); }
+
+/* ─── TIMING ─── */
+.timing-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.timing-card {
+  background: var(--surface); padding: 28px 22px; text-align: center;
+  transition: background 0.3s; position: relative; overflow: hidden;
+}
+.timing-card:hover { background: var(--surface2); }
+.tc-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-size: cover; background-position: center;
+  opacity: 0.04; transition: opacity 0.4s ease;
+}
+.timing-card:hover .tc-bg { opacity: 0.08; }
+[data-theme="light"] .tc-bg { opacity: 0.08; }
+[data-theme="light"] .timing-card:hover .tc-bg { opacity: 0.12; }
+.timing-card > *:not(.tc-bg) { position: relative; z-index: 1; }
+.tc-market {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 10px;
+}
+.tc-label { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 4px; letter-spacing: -0.3px; }
+.tc-desc { font-size: 11px; color: var(--text3); line-height: 1.55; }
+
+/* ─── RETURN ENGINE ─── */
+.return-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.return-card {
+  background: var(--surface); padding: 28px 20px; text-align: center;
+  transition: background 0.3s;
+}
+.return-card:hover { background: var(--surface2); }
+.rc-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px; font-size: 15px; color: var(--text3);
+  background: rgba(255,255,255,0.015); border: 1px solid var(--border);
+}
+.return-card h4 { font-size: 13px; font-weight: 600; color: var(--text1); margin-bottom: 6px; }
+.return-card p { font-size: 11px; color: var(--text3); line-height: 1.5; }
+[data-theme="light"] .rc-icon { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+
+/* ─── OUTCOME ─── */
+.outcome-box {
+  background: var(--surface); border-radius: 12px;
+  border: 1px solid var(--border); padding: 40px 32px;
+}
+.outcome-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; }
+.outcome-item { text-align: center; }
+.oi-num { font-size: 40px; font-weight: 900; color: var(--text1); letter-spacing: -1px; margin-bottom: 4px; }
+.oi-label { font-size: 12px; color: var(--text2); line-height: 1.5; max-width: 160px; margin: 0 auto; }
+
+/* ─── DIVERSIFICATION ─── */
+.div-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); margin-top: 20px;
+}
+.div-card { background: var(--surface); padding: 24px 22px; }
+.div-card .dc-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 10px;
+}
+.div-card p { font-size: 12px; color: var(--text3); line-height: 1.6; }
+
+/* ─── FOOTER ─── */
+.foot {
+  text-align: center; font-size: 10px; color: var(--text5);
+  padding: 40px 0 60px; line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── SCROLL REVEAL ─── */
+.reveal {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── CONNECTOR TEXT ─── */
+.connector {
+  text-align: center; padding: 28px 0;
+  font-size: 14px; color: var(--text4); line-height: 1.8;
+  max-width: 480px; margin: 0 auto;
+}
+.connector strong { color: var(--text2); font-weight: 600; }
+
+/* ─── CHARTS ─── */
+.chart-container {
+  margin-top: 16px; position: relative;
+  border-top: 1px solid var(--border); padding-top: 14px;
+}
+.chart-container svg { display: block; width: 100%; overflow: visible; }
+.chart-axis text { fill: var(--text5); font-size: 9px; font-family: 'Inter', sans-serif; }
+.chart-axis line, .chart-axis path { stroke: var(--border); }
+.chart-grid line { stroke: var(--chart-grid); }
+.chart-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; fill: var(--text4);
+}
+.chart-annotation {
+  font-size: 8px; fill: var(--text4); font-family: 'Inter', sans-serif;
+}
+
+/* ─── EVIDENCE CHARTS (full width) ─── */
+.evidence-section { margin-bottom: 32px; }
+.evidence-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.evidence-card {
+  background: var(--surface); padding: 24px 20px;
+}
+.evidence-card .ec-title {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 4px;
+}
+.evidence-card .ec-subtitle {
+  font-size: 11px; color: var(--text3); margin-bottom: 14px;
+}
+.ec-header {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.ec-thumb {
+  width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
+  flex-shrink: 0; opacity: 0.7; filter: saturate(0.4);
+  transition: opacity 0.3s, filter 0.3s;
+}
+.evidence-card:hover .ec-thumb { opacity: 0.9; filter: saturate(0.7); }
+[data-theme="light"] .ec-thumb { opacity: 0.9; filter: saturate(0.7); }
+.ec-header-text { flex: 1; }
+.evidence-card .ec-stat {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border);
+}
+.ec-stat .ec-big { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.ec-stat .ec-desc { font-size: 10px; color: var(--text4); text-align: right; max-width: 120px; }
+
+/* ─── ASSET CHART inside cards ─── */
+.ac-chart-wrap {
+  margin-top: 16px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.ac-chart-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--text4); margin-bottom: 8px;
+}
+
+/* ─── LIGHT MODE DEPTH ─── */
+[data-theme="light"] .pattern-timeline,
+[data-theme="light"] .tw-grid,
+[data-theme="light"] .assets-grid,
+[data-theme="light"] .timing-grid,
+[data-theme="light"] .evidence-grid,
+[data-theme="light"] .return-grid,
+[data-theme="light"] .div-grid,
+[data-theme="light"] .flow-wrap,
+[data-theme="light"] .outcome-box,
+[data-theme="light"] .map-wrap {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* ─── EXPAND INDICATOR ─── */
+.expand-indicator {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; cursor: pointer;
+}
+.ei-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text5);
+  transition: color 0.2s;
+}
+.ei-icon {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  color: var(--text5);
+}
+.ei-icon svg { display: block; }
+*:hover > .expand-indicator .ei-label { color: var(--text3); }
+*:hover > .expand-indicator .ei-icon { border-color: var(--text4); color: var(--text4); }
+.open > .expand-indicator .ei-icon { transform: rotate(45deg); }
+.open > .expand-indicator .ei-label { color: var(--text3); }
+
+/* ─── FOCUS STATES ─── */
+.nav-link:focus-visible,
+.hero-scroll:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.pattern-era:focus-visible,
+.tw-card:focus-visible,
+.asset-card:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: -2px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════ -->
+<nav class="nav">
+  <div class="nav-logo">Equitie</div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <button class="nav-link active" onclick="scrollTo('#hero')">Thesis</button>
+      <button class="nav-link" onclick="scrollTo('#pattern')">Pattern</button>
+      <button class="nav-link" onclick="scrollTo('#tailwinds')">Tailwinds</button>
+      <button class="nav-link" onclick="scrollTo('#map')">Map</button>
+      <button class="nav-link" onclick="scrollTo('#assets')">Assets</button>
+      <button class="nav-link" onclick="scrollTo('#returns')">Returns</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode"></button>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- ═══════ ACT 0: HERO ═══════ -->
+<section class="hero" id="hero">
+  <div class="hero-kicker">Investment Thesis — Confidential</div>
+  <h1><strong>Every tech wealth cycle</strong> reshapes real estate.<br>This is the AI cycle.</h1>
+  <div class="hero-sub">
+    A concentrated vehicle capturing capital flows, income generation, and cycle dislocation across three structurally supply-constrained global markets.
+  </div>
+  <button class="hero-scroll" onclick="scrollTo('#pattern')">Begin ↓</button>
+</section>
+
+<!-- ═══════ ACT 1: THE PATTERN ═══════ -->
+<section id="pattern">
+  <div class="reveal">
+    <div class="s-kicker">Act I — The Pattern</div>
+    <div class="s-title">This has happened before. Twice.</div>
+    <div class="s-subtitle">
+      Tech wealth cycles create concentrated liquidity events. That capital migrates — predictably — into scarce real assets. The destination changes. The pattern does not.
+    </div>
+  </div>
+
+  <div class="pattern-timeline reveal">
+    <div class="pattern-era" onclick="toggleEra(this)">
+      <div class="pe-period">1997 – 2005</div>
+      <h3>The Dotcom Boom</h3>
+      <div class="pe-arrow">IPO wealth → San Francisco</div>
+      <div class="pe-stat">2.2×</div>
+      <div class="pe-stat-label">SF median home price increase</div>
+      <div id="chart-sf" class="chart-container"></div>
+      <div class="pe-detail">
+        258,000 new millionaires created in the Bay Area at peak. Median home price surged from $290K to $640K. Wealth concentrated in a 50-mile radius around Sand Hill Road. Post-crash, prices never returned to pre-boom levels — the floor was permanently reset.
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+    <div class="pattern-era" onclick="toggleEra(this)">
+      <div class="pe-period">2020 – 2025</div>
+      <h3>The Crypto Boom</h3>
+      <div class="pe-arrow">Token wealth → Dubai &amp; Miami</div>
+      <div class="pe-stat">3.3×</div>
+      <div class="pe-stat-label">Dubai price/sqft increase from trough</div>
+      <div id="chart-dubai" class="chart-container"></div>
+      <div class="pe-detail">
+        Zero income and capital gains tax drew crypto wealth to the UAE. Over $110B in crypto capital flowed into Dubai real estate. Entire neighborhoods repriced. The globally mobile, tax-sensitive buyer chose Dubai over London and Singapore — reshaping the market permanently.
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+    <div class="pattern-era current" onclick="toggleEra(this)">
+      <div class="pe-period">2024 – 2032</div>
+      <h3>The AI Boom</h3>
+      <div class="pe-arrow">AI wealth → Global scarcity assets</div>
+      <div class="pe-stat">$10.7T</div>
+      <div class="pe-stat-label">Projected AI-generated wealth across 5 hubs</div>
+      <div id="chart-ai" class="chart-container"></div>
+      <div class="pe-detail">
+        This cycle is different in one critical way: AI wealth is being created simultaneously across five global hubs. The capital is more distributed, the buyers are younger and more lifestyle-driven, and they are choosing assets based on scarcity, tax efficiency, and quality of life — not proximity to an office.
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+  </div>
+
+  <div class="connector reveal">
+    The pattern is clear: <strong>concentrated wealth creation → lifestyle migration → price explosion</strong> in supply-constrained markets.<br><br>
+    The question is not whether this happens. It is <strong>which assets</strong> capture the flow.
+  </div>
+</section>
+
+<!-- ═══════ ACT 2: TAILWINDS ═══════ -->
+<section id="tailwinds">
+  <div class="reveal">
+    <div class="s-kicker">Act II — The Tailwinds</div>
+    <div class="s-title">Six forces converging now</div>
+    <div class="s-subtitle">
+      Each tailwind is independently significant. Together, they create a compounding demand environment for scarce real assets.
+    </div>
+  </div>
+
+  <div class="tw-grid reveal">
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">01</div>
+      <h3>AI-Driven Wealth Expansion</h3>
+      <div class="tw-desc">Rapid expansion of liquid and semi-liquid wealth. AI founders, early employees, and secondary participants creating a new generation of UHNW buyers.</div>
+      <div class="tw-highlight">+5–7% CAGR</div>
+      <div class="tw-highlight-label">Projected UHNW growth</div>
+      <div class="tw-data">
+        <strong>UHNW population:</strong> +5–7% CAGR projected over 5 years<br>
+        <strong>Cycle precedent:</strong> Dot-com → SF, Crypto → Dubai, AI → Global<br>
+        <strong>Buyer profile:</strong> Younger, globally mobile, lifestyle + status driven<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Incremental marginal buyer prefers scarcity assets</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">02</div>
+      <h3>Capital Rotation into Hard Assets</h3>
+      <div class="tw-desc">Structural shift from financial assets to real assets driven by inflation persistence, geopolitical uncertainty, and equity multiple compression.</div>
+      <div class="tw-highlight">$4.8T</div>
+      <div class="tw-highlight-label">Family office real asset allocation</div>
+      <div class="tw-data">
+        <strong>Family offices:</strong> Allocation to real assets increasing structurally<br>
+        <strong>Cross-border flows:</strong> MENA → UK / US / Asia accelerating<br>
+        <strong>Private RE:</strong> Under-allocated vs equities in most UHNW portfolios<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Prime real estate = store of value + social signal</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">03</div>
+      <h3>Structural Supply Constraints</h3>
+      <div class="tw-desc">Across all three target markets, supply cannot scale to meet demand. Zoning, heritage, and geography create permanent pricing power for existing asset owners.</div>
+      <div class="tw-highlight">~0%</div>
+      <div class="tw-highlight-label">Net new prime supply</div>
+      <div class="tw-data">
+        <strong>Jackson Hole:</strong> Extreme zoning + environmental restrictions<br>
+        <strong>Central London:</strong> Heritage planning rules, near-zero new prime supply<br>
+        <strong>Bali:</strong> Land scarcity in premium zones, infrastructure lag<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Structural scarcity = sustained pricing power</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">04</div>
+      <h3>Lifestyle Arbitrage</h3>
+      <div class="tw-desc">Work-life convergence and remote/hybrid norms creating a new demand driver that is identity-driven, not purely financial. This demand is sticky.</div>
+      <div class="tw-highlight">90 min</div>
+      <div class="tw-highlight-label">Private jet to SFO</div>
+      <div class="tw-data">
+        <strong>Jackson Hole:</strong> Seasonal elite living, 90 min private jet to SFO<br>
+        <strong>Bali:</strong> Work + holiday hybrid, digital nomad visa active<br>
+        <strong>London:</strong> Premium flexible office, walkable cultural hub<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Demand is identity-driven and non-cyclical</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">05</div>
+      <h3>Timing Dislocation</h3>
+      <div class="tw-desc">Each market offers a distinct cycle entry point — cyclical correction in London, structural inflection in Bali, proven demand in Jackson Hole.</div>
+      <div class="tw-highlight">3 distinct</div>
+      <div class="tw-highlight-label">Cycle entry points</div>
+      <div class="tw-data">
+        <strong>UK:</strong> Post-rate hike correction — distressed / mispriced assets<br>
+        <strong>US:</strong> Strong bid at top end — proven, liquid market<br>
+        <strong>Bali:</strong> Early-stage institutionalization — fragmented operator market<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Entry at cyclical lows, structural inflection, proven demand</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="tw-card" onclick="toggleTw(this)">
+      <div class="tw-num">06</div>
+      <h3>Yield + Leverage Dynamics</h3>
+      <div class="tw-desc">Hybrid return profile combining income generation, development upside, and leverage amplification — without venture-style risk or binary outcomes.</div>
+      <div class="tw-highlight">12–18%</div>
+      <div class="tw-highlight-label">Target net IRR</div>
+      <div class="tw-data">
+        <strong>Income:</strong> Hospitality daily cash flow (Bali), stabilized rent (London)<br>
+        <strong>Leverage:</strong> Debt on stabilized assets enhances IRR<br>
+        <strong>Recycling:</strong> Cash flow → reinvestment, development → lump-sum exits<br>
+        <div class="tw-impl" style="color:var(--jh);">→ Yield + growth + leverage amplification</div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+  </div>
+
+  <div class="connector reveal">
+    These six forces are not hypothetical. They are <strong>observable now</strong>, and they compound on each other. The vehicle is designed to sit at the intersection of all six.
+  </div>
+</section>
+
+<!-- ═══════ ACT 3: MAP ═══════ -->
+<section id="map" class="map-section">
+  <div class="reveal">
+    <div class="s-kicker">Act III — The Flows</div>
+    <div class="s-title">Where AI wealth is created — and where it migrates</div>
+    <div class="s-subtitle">
+      Five creation hubs. Three destination markets. Capital flows along predictable paths from concentrated wealth centers to scarce, lifestyle-aligned assets.
+    </div>
+  </div>
+
+  <div class="map-wrap reveal" id="map-wrap">
+    <div class="map-tooltip" id="tooltip"></div>
+  </div>
+  <div class="map-legend-bar">
+    <div class="ml-item"><div class="ml-dot" style="background:var(--hub);"></div> AI Wealth Hub</div>
+    <div class="ml-item"><div class="ml-diamond" style="background:var(--jh);"></div> Jackson Hole</div>
+    <div class="ml-item"><div class="ml-diamond" style="background:var(--bali);"></div> Bali</div>
+    <div class="ml-item"><div class="ml-diamond" style="background:var(--lon);"></div> Central London</div>
+    <div class="ml-item">
+      <svg width="16" height="4"><line x1="0" y1="2" x2="16" y2="2" stroke="#2a3545" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>
+      Capital Flow
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ EVIDENCE CHARTS ═══════ -->
+<section class="evidence-section">
+  <div class="reveal">
+    <div class="s-kicker">The Evidence</div>
+    <div class="s-title">Price trajectories across all three destination markets</div>
+    <div class="s-subtitle">
+      Historical data for Jackson Hole and Central London. Early-stage pricing data for Bali. All three showing structural upward pressure consistent with wealth migration thesis.
+    </div>
+  </div>
+  <div class="evidence-grid reveal">
+    <div class="evidence-card">
+      <div class="ec-header">
+        <img class="ec-thumb" src="jacksonholecottage.jpeg" alt="Jackson Hole cottage" loading="lazy">
+        <div class="ec-header-text">
+          <div class="ec-title" style="color:var(--jh);">Jackson Hole — Luxury Residential</div>
+          <div class="ec-subtitle">Median sale price, $M (2018–2026E)</div>
+        </div>
+      </div>
+      <div id="chart-jh-evidence"></div>
+      <div class="ec-stat">
+        <span class="ec-big" style="color:var(--jh);">+92%</span>
+        <span class="ec-desc">Price increase since 2018, accelerating post-2020</span>
+      </div>
+    </div>
+    <div class="evidence-card">
+      <div class="ec-header">
+        <img class="ec-thumb" src="morabitobeach.jpg" alt="Bali beachfront" loading="lazy">
+        <div class="ec-header-text">
+          <div class="ec-title" style="color:var(--bali);">Bali — Premium Hospitality RevPAR</div>
+          <div class="ec-subtitle">Revenue per available room, USD (2018–2026E)</div>
+        </div>
+      </div>
+      <div id="chart-bali-evidence"></div>
+      <div class="ec-stat">
+        <span class="ec-big" style="color:var(--bali);">+140%</span>
+        <span class="ec-desc">RevPAR growth from 2021 trough to 2026 projection</span>
+      </div>
+    </div>
+    <div class="evidence-card">
+      <div class="ec-header">
+        <img class="ec-thumb" src="mayfairofficedoor.jpeg" alt="Mayfair office entrance" loading="lazy">
+        <div class="ec-header-text">
+          <div class="ec-title" style="color:var(--lon);">Central London — Prime Office Rent</div>
+          <div class="ec-subtitle">Average rent £/sqft, Mayfair-Soho (2018–2026E)</div>
+        </div>
+      </div>
+      <div id="chart-lon-evidence"></div>
+      <div class="ec-stat">
+        <span class="ec-big" style="color:var(--lon);">£95→£135</span>
+        <span class="ec-desc">Recovery underway after 2022–23 correction</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ACT 4: STRUCTURE ═══════ -->
+<section id="structure">
+  <div class="reveal">
+    <div class="s-kicker">Act IV — The Vehicle</div>
+    <div class="s-title">Capital structure</div>
+    <div class="s-subtitle">
+      A concentrated allocation vehicle with active management and selective leverage, deploying into three structurally distinct, supply-constrained assets.
+    </div>
+  </div>
+
+  <div class="flow-wrap reveal">
+    <div class="flow-stage">
+      <div class="fs-num">Capital In</div>
+      <h4>Investors</h4>
+      <p>UHNW individuals, family offices, and global capital seeking real asset exposure with income and growth</p>
+      <div class="flow-chevron">›</div>
+    </div>
+    <div class="flow-stage">
+      <div class="fs-num">Vehicle</div>
+      <h4>Concentrated Allocation</h4>
+      <p>Active management with selective leverage across three assets, three geographies, and three return types</p>
+      <div class="flow-chevron">›</div>
+    </div>
+    <div class="flow-stage">
+      <div class="fs-num">Deployment</div>
+      <h4>3 Scarcity Assets</h4>
+      <p>Jackson Hole luxury development, Bali wellness hospitality, Central London prime offices</p>
+      <div class="flow-chevron">›</div>
+    </div>
+    <div class="flow-stage">
+      <div class="fs-num">Returns</div>
+      <h4>Hybrid Engine</h4>
+      <p>Income + development margin + leverage amplification + cap rate compression at exit</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ACT 5: ASSETS ═══════ -->
+<section id="assets">
+  <div class="reveal">
+    <div class="s-kicker">Act V — The Three Assets</div>
+    <div class="s-title">Three markets. Three strategies. One thesis.</div>
+    <div class="s-subtitle">
+      Each asset is independently compelling. Together they provide geographic, use-case, and return-type diversification within a single concentrated vehicle.
+    </div>
+  </div>
+
+  <div class="assets-grid reveal">
+    <div class="asset-card jh" onclick="toggleAsset(this)">
+      <div class="ac-img"><img src="jacksonhole4seasons.jpg" alt="Jackson Hole" loading="lazy"></div>
+      <div class="ac-loc">Jackson Hole, Wyoming</div>
+      <div class="ac-name">Scarcity-Driven Development</div>
+      <div class="ac-tag">"The new Hamptons for AI wealth — extreme zoning meets unlimited demand"</div>
+      <div class="ac-chart-wrap">
+        <div class="ac-chart-label">Projected Price Trajectory ($M)</div>
+        <div id="chart-asset-jh"></div>
+      </div>
+      <div class="ac-metrics">
+        <div class="ac-metric"><span class="acm-l">Strategy</span><span class="acm-v">Ground-up development</span></div>
+        <div class="ac-metric"><span class="acm-l">Asset Type</span><span class="acm-v">Luxury residential estates</span></div>
+        <div class="ac-metric"><span class="acm-l">Supply</span><span class="acm-v">Near-zero new supply</span></div>
+        <div class="ac-metric"><span class="acm-l">Tax</span><span class="acm-v">0% state income tax (WY)</span></div>
+        <div class="ac-metric"><span class="acm-l">Access</span><span class="acm-v">90 min private jet → SFO/SEA</span></div>
+      </div>
+      <div class="ac-return">
+        <div class="acr-label">Return Driver</div>
+        <div class="acr-text">Development margin plus exit premium on completed luxury product in a structurally supply-constrained market. Lump-sum exit on project completion.</div>
+        <div class="thumb-strip">
+          <img src="jacksonholeaerial.jpeg" alt="Jackson Hole aerial view" loading="lazy">
+          <img src="jacksonholetop.jpeg" alt="Jackson Hole mountain vista" loading="lazy">
+        </div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="asset-card bali" onclick="toggleAsset(this)">
+      <div class="ac-img"><img src="morabitohotelpool.jpg" alt="Bali" loading="lazy"></div>
+      <div class="ac-loc">Bali, Indonesia</div>
+      <div class="ac-name">High-Yield Lifestyle Hospitality</div>
+      <div class="ac-tag">"Global wellness capital — where Singapore and Sydney wealth decompresses"</div>
+      <div class="ac-chart-wrap">
+        <div class="ac-chart-label">Projected Nightly Rate (USD)</div>
+        <div id="chart-asset-bali"></div>
+      </div>
+      <div class="ac-metrics">
+        <div class="ac-metric"><span class="acm-l">Strategy</span><span class="acm-v">Operating hospitality</span></div>
+        <div class="ac-metric"><span class="acm-l">Asset Type</span><span class="acm-v">Ultra-luxury eco-resorts</span></div>
+        <div class="ac-metric"><span class="acm-l">Market</span><span class="acm-v">$1.4T global wellness tourism</span></div>
+        <div class="ac-metric"><span class="acm-l">Visa</span><span class="acm-v">Digital nomad visa active</span></div>
+        <div class="ac-metric"><span class="acm-l">Zones</span><span class="acm-v">Ubud · Canggu · Uluwatu</span></div>
+      </div>
+      <div class="ac-return">
+        <div class="acr-label">Return Driver</div>
+        <div class="acr-text">Daily cash flow yield plus brand premium appreciation as the market institutionalizes from fragmented, operator-driven origins. Recurring income with upside optionality.</div>
+        <div class="thumb-strip">
+          <img src="morabitohotel.jpg" alt="Morabito resort exterior" loading="lazy">
+          <img src="morabitobathtub.jpg" alt="Luxury villa bathroom" loading="lazy">
+        </div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+
+    <div class="asset-card lon" onclick="toggleAsset(this)">
+      <div class="ac-img"><img src="mayfairpianooffice.jpg" alt="Central London" loading="lazy"></div>
+      <div class="ac-loc">Central London, UK</div>
+      <div class="ac-name">Prime Office Repositioning</div>
+      <div class="ac-tag">"Heritage-constrained supply meets insatiable AI demand for prestige addresses"</div>
+      <div class="ac-chart-wrap">
+        <div class="ac-chart-label">Projected Rent £/sqft</div>
+        <div id="chart-asset-lon"></div>
+      </div>
+      <div class="ac-metrics">
+        <div class="ac-metric"><span class="acm-l">Strategy</span><span class="acm-v">Acquire, reposition, stabilize</span></div>
+        <div class="ac-metric"><span class="acm-l">Asset Type</span><span class="acm-v">Boutique offices &lt;3,000 sqft</span></div>
+        <div class="ac-metric"><span class="acm-l">Cycle</span><span class="acm-v">Post-correction entry</span></div>
+        <div class="ac-metric"><span class="acm-l">Tenants</span><span class="acm-v">DeepMind + AI startups</span></div>
+        <div class="ac-metric"><span class="acm-l">Zones</span><span class="acm-v">Mayfair · Soho · Fitzrovia</span></div>
+      </div>
+      <div class="ac-return">
+        <div class="acr-label">Return Driver</div>
+        <div class="acr-text">Stabilized rental yield plus cap rate compression as the market recovers and AI-driven tenant demand reprices prime small-format space upward.</div>
+        <div class="thumb-strip">
+          <img src="mayfairbuildingroof.jpg" alt="Mayfair building rooftop" loading="lazy">
+          <img src="mayfairofficemeetingroom.jpeg" alt="Mayfair meeting room" loading="lazy">
+        </div>
+      </div>
+      <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ TIMING ═══════ -->
+<section>
+  <div class="reveal">
+    <div class="s-kicker">Act VI — Cycle Entry</div>
+    <div class="s-title">Three distinct entry points</div>
+    <div class="s-divider"></div>
+  </div>
+
+  <div class="timing-grid reveal">
+    <div class="timing-card">
+      <div class="tc-bg" style="background-image:url('mayfairofficeindoor.jpg')"></div>
+      <div class="tc-market" style="color:var(--lon);">United Kingdom</div>
+      <div class="tc-label">Cyclical Low</div>
+      <div class="tc-desc">Post-rate hike correction. Distressed and mispriced assets. Institutional capital on the sidelines — not yet fully deployed.</div>
+    </div>
+    <div class="timing-card">
+      <div class="tc-bg" style="background-image:url('morabitoroom.jpg')"></div>
+      <div class="tc-market" style="color:var(--bali);">Indonesia</div>
+      <div class="tc-label">Structural Growth</div>
+      <div class="tc-desc">Early-stage institutionalization of a fragmented market. Infrastructure investment creating an inflection point for premium positioning.</div>
+    </div>
+    <div class="timing-card">
+      <div class="tc-bg" style="background-image:url('jacksonholelake.jpeg')"></div>
+      <div class="tc-market" style="color:var(--jh);">United States</div>
+      <div class="tc-label">Proven Liquidity</div>
+      <div class="tc-desc">Strong sustained bid at the top end. Luxury segment demonstrating resilient demand with deep transaction history and clear exit paths.</div>
+    </div>
+  </div>
+
+  <div class="connector reveal">
+    The portfolio is designed to <strong>harvest dislocation</strong> in London, <strong>ride structural growth</strong> in Bali, and <strong>access proven demand</strong> in Jackson Hole — all within a single vehicle.
+  </div>
+</section>
+
+<!-- ═══════ ACT 7: RETURN ENGINE ═══════ -->
+<section id="returns">
+  <div class="reveal">
+    <div class="s-kicker">Act VII — The Return Engine</div>
+    <div class="s-title">Four sources of return. One amplifying structure.</div>
+    <div class="s-divider"></div>
+  </div>
+
+  <div class="return-grid reveal">
+    <div class="return-card">
+      <div class="rc-icon">&#x21BB;</div>
+      <h4>Income</h4>
+      <p>Hospitality daily cash flow and stabilized office rent provide recurring yield across the portfolio</p>
+    </div>
+    <div class="return-card">
+      <div class="rc-icon">&#x25B3;</div>
+      <h4>Development</h4>
+      <p>Ground-up development margin on luxury residential with lump-sum exit on completed product</p>
+    </div>
+    <div class="return-card">
+      <div class="rc-icon">&#x2922;</div>
+      <h4>Leverage</h4>
+      <p>Selective debt on stabilized and developable assets amplifies IRR without venture-style binary risk</p>
+    </div>
+    <div class="return-card">
+      <div class="rc-icon">&#x25C7;</div>
+      <h4>Multiple Expansion</h4>
+      <p>Cap rate compression as markets recover and institutional capital reprices prime assets upward</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PORTFOLIO OUTCOME ═══════ -->
+<section>
+  <div class="reveal">
+    <div class="s-kicker">Outcome</div>
+    <div class="s-title">What the investor gets</div>
+    <div class="s-divider"></div>
+  </div>
+
+  <div class="outcome-box reveal">
+    <div class="outcome-grid">
+      <div class="outcome-item">
+        <div class="oi-num">3</div>
+        <div class="oi-label">Geographies with low intra-portfolio correlation (US / UK / SEA)</div>
+      </div>
+      <div class="outcome-item">
+        <div class="oi-num">3</div>
+        <div class="oi-label">Distinct use cases (Residential / Hospitality / Office)</div>
+      </div>
+      <div class="outcome-item">
+        <div class="oi-num">3</div>
+        <div class="oi-label">Return types in one vehicle (Dev / Yield / Recovery)</div>
+      </div>
+      <div class="outcome-item">
+        <div class="oi-num">1</div>
+        <div class="oi-label">Unified demand driver (AI wealth creation cycle)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="div-grid reveal">
+    <div class="div-card">
+      <div class="dc-label" style="color:var(--jh);">Geographic</div>
+      <p>United States, United Kingdom, Southeast Asia — uncorrelated macro environments reduce portfolio-level volatility and concentration risk.</p>
+    </div>
+    <div class="div-card">
+      <div class="dc-label" style="color:var(--bali);">Use Case</div>
+      <p>Residential development, operating hospitality, and stabilized commercial — each with distinct risk/return profiles and cash flow timing.</p>
+    </div>
+    <div class="div-card">
+      <div class="dc-label" style="color:var(--lon);">Return Type</div>
+      <p>Development margin, operating yield, and recovery upside — blended to deliver more stable aggregate returns across market conditions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<div class="foot">
+  This document is for informational purposes only and does not constitute an offer or solicitation.<br>
+  Projections are based on historical wealth migration patterns and market analysis. Past performance is not indicative of future results.<br>
+  Sources: PwC Global UHNW Report, Knight Frank Wealth Report 2025, CBRE Prime Markets, Savills World Cities, Chainalysis, NAR
+</div>
+
+</div><!-- .page -->
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+// ─── SCROLL NAV ───
+function scrollTo(sel) {
+  document.querySelector(sel).scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── NAV ACTIVE STATE ───
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 200) current = s.id;
+  });
+  navLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('onclick')?.includes(current)) l.classList.add('active');
+  });
+});
+
+// ─── THEME TOGGLE ───
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  // Redraw all charts with new theme colors
+  redrawAllCharts();
+  // Redraw map land/borders
+  const style = getComputedStyle(document.documentElement);
+  d3.selectAll('.land').attr('fill', style.getPropertyValue('--land-fill').trim())
+    .attr('stroke', style.getPropertyValue('--land-stroke').trim());
+  d3.selectAll('.border-line').attr('stroke', style.getPropertyValue('--land-stroke').trim());
+  d3.selectAll('.graticule').attr('stroke', style.getPropertyValue('--grat-stroke').trim());
+}
+
+// ─── TOGGLE INTERACTIONS ───
+function toggleEra(el) { el.classList.toggle('open'); }
+function toggleTw(el) { el.classList.toggle('open'); }
+function toggleAsset(el) { el.classList.toggle('open'); }
+
+// ─── D3 MAP ───
+const W = 1016, H = 420;
+const HUBS = [
+  {id:"sf",name:"San Francisco",sub:"Silicon Valley",lat:37.77,lon:-122.42,wealth:"$4.2T",detail:"412K AI workers"},
+  {id:"nyc",name:"New York",sub:"Wall St × AI",lat:40.71,lon:-74.01,wealth:"$2.8T",detail:"285K AI workers"},
+  {id:"lon",name:"London",sub:"DeepMind Hub",lat:51.51,lon:-0.13,wealth:"$1.9T",detail:"195K AI workers"},
+  {id:"sgp",name:"Singapore",sub:"Asia Gateway",lat:1.35,lon:103.82,wealth:"$1.1T",detail:"88K AI workers"},
+  {id:"syd",name:"Sydney",sub:"APAC Centre",lat:-33.87,lon:151.21,wealth:"$0.7T",detail:"62K AI workers"},
+];
+const DESTS = [
+  {id:"jh",name:"Jackson Hole",lat:43.48,lon:-110.76,color:"#4a7c6b"},
+  {id:"bali",name:"Bali",lat:-8.41,lon:115.19,color:"#8a7a4a"},
+  {id:"clon",name:"Central London",lat:51.51,lon:-0.13,color:"#4a6a8a"},
+];
+const FLOWS = [
+  {from:"sf",to:"jh",w:5},{from:"nyc",to:"jh",w:4},{from:"sgp",to:"jh",w:1},
+  {from:"sf",to:"bali",w:3},{from:"sgp",to:"bali",w:5},{from:"syd",to:"bali",w:4},{from:"lon",to:"bali",w:2},
+  {from:"lon",to:"clon",w:5},{from:"nyc",to:"clon",w:3},{from:"sf",to:"clon",w:2},
+];
+
+const proj = d3.geoNaturalEarth1().scale(170).translate([W/2+20, H/2+25]);
+const pathGen = d3.geoPath().projection(proj);
+const grat = d3.geoGraticule().step([20,20]);
+
+const svg = d3.select("#map-wrap").append("svg")
+  .attr("viewBox",`0 0 ${W} ${H}`).attr("width","100%").style("display","block");
+
+const defs = svg.append("defs");
+const glow = defs.append("filter").attr("id","glow").attr("x","-50%").attr("y","-50%").attr("width","200%").attr("height","200%");
+glow.append("feGaussianBlur").attr("stdDeviation","2.5").attr("result","b");
+const gm = glow.append("feMerge"); gm.append("feMergeNode").attr("in","b"); gm.append("feMergeNode").attr("in","SourceGraphic");
+
+const sg = defs.append("filter").attr("id","sg").attr("x","-100%").attr("y","-100%").attr("width","300%").attr("height","300%");
+sg.append("feGaussianBlur").attr("stdDeviation","7").attr("result","b");
+const sgm = sg.append("feMerge"); sgm.append("feMergeNode").attr("in","b"); sgm.append("feMergeNode").attr("in","SourceGraphic");
+
+svg.append("path").datum(grat()).attr("d",pathGen).attr("class","graticule");
+
+const tooltip = document.getElementById("tooltip");
+function showTip(evt,html){
+  const r = document.getElementById("map-wrap").getBoundingClientRect();
+  tooltip.innerHTML=html; tooltip.classList.add("visible");
+  tooltip.style.left=(evt.clientX-r.left+14)+"px"; tooltip.style.top=(evt.clientY-r.top-10)+"px";
+}
+function moveTip(evt){
+  const r = document.getElementById("map-wrap").getBoundingClientRect();
+  tooltip.style.left=(evt.clientX-r.left+14)+"px"; tooltip.style.top=(evt.clientY-r.top-10)+"px";
+}
+function hideTip(){ tooltip.classList.remove("visible"); }
+
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world => {
+  const land = topojson.feature(world, world.objects.land);
+  const borders = topojson.mesh(world, world.objects.countries,(a,b)=>a!==b);
+  svg.append("path").datum(land).attr("d",pathGen).attr("class","land");
+  svg.append("path").datum(borders).attr("d",pathGen).attr("class","border-line");
+  drawMap();
+});
+
+function drawMap(){
+  const hc={}; HUBS.forEach(h=>{hc[h.id]=proj([h.lon,h.lat]);});
+  const dc={}; DESTS.forEach(d=>{
+    const c=proj([d.lon,d.lat]);
+    dc[d.id]=d.id==="clon"?[c[0]+14,c[1]-16]:c;
+  });
+
+  const fg=svg.append("g");
+
+  FLOWS.forEach((f,i)=>{
+    const [x1,y1]=hc[f.from],[x2,y2]=dc[f.to];
+    const dx=x2-x1,dy=y2-y1;
+    const mx=(x1+x2)/2-dy*0.2, my=(y1+y2)/2+dx*0.05-Math.sqrt(dx*dx+dy*dy)*0.14;
+    const pd=`M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    const dest=DESTS.find(d=>d.id===f.to);
+
+    const gid=`fg-${f.from}-${f.to}`;
+    const grad=defs.append("linearGradient").attr("id",gid)
+      .attr("gradientUnits","userSpaceOnUse").attr("x1",x1).attr("y1",y1).attr("x2",x2).attr("y2",y2);
+    grad.append("stop").attr("offset","0%").attr("stop-color","#708098").attr("stop-opacity",0.3);
+    grad.append("stop").attr("offset","100%").attr("stop-color",dest.color).attr("stop-opacity",0.4);
+
+    const pathEl=fg.append("path").attr("d",pd).attr("fill","none")
+      .attr("stroke",`url(#${gid})`).attr("stroke-width",0.5+f.w*0.12)
+      .attr("stroke-dasharray","2.5 3.5").attr("opacity",0.5);
+
+    for(let p=0;p<Math.min(f.w,2);p++){
+      const particle=fg.append("circle").attr("r",1.8)
+        .attr("fill",dest.color).attr("opacity",0).attr("filter","url(#glow)");
+      animP(particle,pathEl.node(),p*1500,3500+p*400);
+    }
+  });
+
+  const mg=svg.append("g");
+  HUBS.forEach(h=>{
+    const [cx,cy]=hc[h.id];
+    const g=mg.append("g").style("cursor","pointer");
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",18)
+      .attr("fill","#708098").attr("opacity",0.02).attr("filter","url(#sg)");
+    const pulse=g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",7)
+      .attr("fill","none").attr("stroke","#708098").attr("stroke-width",0.5).attr("opacity",0);
+    animRing(pulse);
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",7)
+      .attr("fill","none").attr("stroke","#708098").attr("stroke-width",0.4).attr("opacity",0.18);
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",3)
+      .attr("fill","#708098").attr("opacity",0.6);
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",1.2)
+      .attr("fill","#d0d6df").attr("opacity",0.7);
+    g.append("text").attr("x",cx).attr("y",cy-12)
+      .attr("text-anchor","middle").attr("fill","#708098")
+      .attr("font-size","7.5px").attr("font-weight","600")
+      .attr("font-family","Inter,sans-serif").text(h.name);
+    g.on("mouseenter",function(evt){
+      showTip(evt,`<div class="tt-name">${h.name}</div><div style="color:#586070;">${h.sub}</div><div class="tt-val" style="color:#708098;">${h.wealth} AI-generated wealth</div><div style="color:#586070;">${h.detail}</div>`);
+    }).on("mousemove",moveTip).on("mouseleave",hideTip);
+  });
+
+  const dg=svg.append("g");
+  DESTS.forEach(d=>{
+    const [cx,cy]=dc[d.id];
+    const g=dg.append("g").style("cursor","pointer");
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",16)
+      .attr("fill",d.color).attr("opacity",0.025).attr("filter","url(#sg)");
+    const pulse=g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",9)
+      .attr("fill","none").attr("stroke",d.color).attr("stroke-width",0.5).attr("opacity",0);
+    animRing(pulse,2200);
+    const s=5;
+    g.append("rect").attr("x",cx-s/2).attr("y",cy-s/2).attr("width",s).attr("height",s)
+      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill",d.color).attr("opacity",0.75);
+    g.append("rect").attr("x",cx-2).attr("y",cy-2).attr("width",4).attr("height",4)
+      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill","#e4e8ee").attr("opacity",0.3);
+    g.append("text").attr("x",cx).attr("y",cy-11)
+      .attr("text-anchor","middle").attr("fill",d.color)
+      .attr("font-size","8px").attr("font-weight","700")
+      .attr("font-family","Inter,sans-serif").text(d.name);
+    g.on("mouseenter",function(evt){
+      showTip(evt,`<div class="tt-name">${d.name}</div><div style="color:#586070;">Destination market</div>`);
+    }).on("mousemove",moveTip).on("mouseleave",hideTip);
+  });
+}
+
+function animP(c,p,delay,dur){
+  const len=p.getTotalLength();
+  function run(){
+    c.attr("opacity",0).transition().delay(delay).duration(dur).ease(d3.easeLinear)
+      .attrTween("transform",()=>t=>{const pt=p.getPointAtLength(t*len);return`translate(${pt.x},${pt.y})`;})
+      .attrTween("opacity",()=>t=>t<0.08?t/0.08*0.5:t>0.92?(1-t)/0.08*0.5:0.5)
+      .on("end",run);
+  }
+  run();
+}
+function animRing(c,dur=2600){
+  function run(){
+    c.attr("r",7).attr("opacity",0.25)
+      .transition().duration(dur).ease(d3.easeCubicOut)
+      .attr("r",18).attr("opacity",0)
+      .on("end",run);
+  }
+  run();
+}
+
+// ═══════════════════════════════════════
+// CHARTS — Pattern Era Mini Charts
+// ═══════════════════════════════════════
+
+function drawAreaChart(containerId, data, opts) {
+  const {color, yLabel, yFormat, annotationX, annotationLabel, showBars, barKey, barColor, projected} = opts;
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  // Clear any existing chart
+  container.querySelectorAll('svg').forEach(s => s.remove());
+  const cw = container.clientWidth || 280;
+  const ch = 140;
+  const m = {top:12, right:12, bottom:22, left:36};
+  const w = cw - m.left - m.right;
+  const h = ch - m.top - m.bottom;
+
+  const svg = d3.select(`#${containerId}`).append("svg")
+    .attr("viewBox", `0 0 ${cw} ${ch}`).attr("width","100%");
+
+  const g = svg.append("g").attr("transform",`translate(${m.left},${m.top})`);
+
+  const x = d3.scaleBand().domain(data.map(d=>d.year)).range([0,w]).padding(0.15);
+  const yMax = d3.max(data, d=>d.value) * 1.15;
+  const y = d3.scaleLinear().domain([0, yMax]).range([h,0]);
+
+  const cs = getComputedStyle(document.documentElement);
+  const gridC = cs.getPropertyValue('--chart-grid').trim();
+  const axisC = cs.getPropertyValue('--chart-grid-axis').trim();
+  const textC = cs.getPropertyValue('--text5').trim();
+
+  // Grid
+  g.selectAll(".grid").data(y.ticks(4)).enter().append("line")
+    .attr("x1",0).attr("x2",w).attr("y1",d=>y(d)).attr("y2",d=>y(d))
+    .attr("stroke",gridC);
+
+  // Area
+  const area = d3.area()
+    .x(d=>x(d.year)+x.bandwidth()/2)
+    .y0(h)
+    .y1(d=>y(d.value))
+    .curve(d3.curveMonotoneX);
+
+  const areaGrad = svg.append("defs").append("linearGradient")
+    .attr("id",`ag-${containerId}`).attr("x1","0").attr("y1","0").attr("x2","0").attr("y2","1");
+  areaGrad.append("stop").attr("offset","0%").attr("stop-color",color).attr("stop-opacity",0.15);
+  areaGrad.append("stop").attr("offset","100%").attr("stop-color",color).attr("stop-opacity",0.01);
+
+  g.append("path").datum(data).attr("d",area)
+    .attr("fill",`url(#ag-${containerId})`);
+
+  // Line
+  const line = d3.line()
+    .x(d=>x(d.year)+x.bandwidth()/2)
+    .y(d=>y(d.value))
+    .curve(d3.curveMonotoneX);
+
+  g.append("path").datum(data).attr("d",line)
+    .attr("fill","none").attr("stroke",color).attr("stroke-width",1.5).attr("opacity",0.7);
+
+  // Dots
+  g.selectAll(".dot").data(data).enter().append("circle")
+    .attr("cx",d=>x(d.year)+x.bandwidth()/2)
+    .attr("cy",d=>y(d.value))
+    .attr("r", d => (projected && d.projected) ? 0 : 2.5)
+    .attr("fill",color).attr("opacity",0.8);
+
+  // Projected dots (hollow)
+  if (projected) {
+    g.selectAll(".pdot").data(data.filter(d=>d.projected)).enter().append("circle")
+      .attr("cx",d=>x(d.year)+x.bandwidth()/2)
+      .attr("cy",d=>y(d.value))
+      .attr("r",2.5)
+      .attr("fill","none").attr("stroke",color).attr("stroke-width",1)
+      .attr("stroke-dasharray","2 1.5").attr("opacity",0.6);
+  }
+
+  // Bars (optional secondary axis)
+  if (showBars && barKey) {
+    const yBar = d3.scaleLinear().domain([0, d3.max(data, d=>d[barKey])*1.2]).range([h,0]);
+    g.selectAll(".bar").data(data).enter().append("rect")
+      .attr("x",d=>x(d.year)+2)
+      .attr("y",d=>yBar(d[barKey]))
+      .attr("width",x.bandwidth()-4)
+      .attr("height",d=>h-yBar(d[barKey]))
+      .attr("fill",barColor || color).attr("opacity",0.12)
+      .attr("rx",2);
+  }
+
+  // Axes
+  const xAxis = g.append("g").attr("transform",`translate(0,${h})`)
+    .call(d3.axisBottom(x).tickSize(0).tickPadding(6))
+    .attr("class","chart-axis");
+  xAxis.select(".domain").attr("stroke",axisC);
+  xAxis.selectAll("text").attr("fill",textC);
+
+  const yAxis = g.append("g")
+    .call(d3.axisLeft(y).ticks(4).tickSize(-w).tickFormat(d=> yFormat ? yFormat(d) : d))
+    .attr("class","chart-axis");
+  yAxis.selectAll("line").attr("stroke",gridC);
+  yAxis.selectAll("text").attr("fill",textC);
+  yAxis.select(".domain").attr("stroke",axisC);
+
+  // Annotation line
+  if (annotationX) {
+    const xPos = x(annotationX);
+    if (xPos !== undefined) {
+      g.append("line")
+        .attr("x1",xPos+x.bandwidth()/2).attr("x2",xPos+x.bandwidth()/2)
+        .attr("y1",0).attr("y2",h)
+        .attr("stroke",color).attr("stroke-dasharray","3 3").attr("opacity",0.3);
+      g.append("text")
+        .attr("x",xPos+x.bandwidth()/2).attr("y",-3)
+        .attr("text-anchor","middle").attr("class","chart-annotation")
+        .attr("fill",color).text(annotationLabel);
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// CHART DATA (defined once)
+// ═══════════════════════════════════════
+
+// ─── SF DOTCOM CHART ───
+const sfData = [
+  {year:"1997",value:350},
+  {year:"1998",value:410},
+  {year:"1999",value:520},
+  {year:"2000",value:640},
+  {year:"2001",value:580},
+  {year:"2002",value:550},
+  {year:"2003",value:570},
+  {year:"2004",value:650},
+  {year:"2005",value:760},
+];
+const sfOpts = {color:"#7a8ca0", yFormat: d => `$${d}K`, annotationX:"2000", annotationLabel:"IPO PEAK"};
+
+// ─── DUBAI CRYPTO CHART ───
+const dubaiData = [
+  {year:"2020",value:125},
+  {year:"2021",value:175},
+  {year:"2022",value:220},
+  {year:"2023",value:295},
+  {year:"2024",value:365},
+  {year:"2025",value:410},
+];
+const dubaiOpts = {color:"#8a8a70", yFormat: d => `$${d}`, annotationX:"2021", annotationLabel:"BTC ATH"};
+
+// ─── AI GLOBAL WEALTH CHART ───
+const aiData = [
+  {year:"2024",value:1.8,projected:false},
+  {year:"2025",value:2.9,projected:false},
+  {year:"2026",value:4.2,projected:true},
+  {year:"2027",value:5.8,projected:true},
+  {year:"2028",value:7.2,projected:true},
+  {year:"2029",value:8.6,projected:true},
+  {year:"2030",value:9.8,projected:true},
+  {year:"2032",value:10.7,projected:true},
+];
+const aiOpts = {color:"#708098", yFormat: d => `$${d}T`, annotationX:"2026", annotationLabel:"NOW", projected: true};
+
+
+// ═══════════════════════════════════════
+// EVIDENCE CHARTS — Full Width Section
+// ═══════════════════════════════════════
+
+// Jackson Hole evidence
+const jhEvidence = [
+  {year:"2018",value:1.8},
+  {year:"2019",value:1.95},
+  {year:"2020",value:2.15},
+  {year:"2021",value:2.65},
+  {year:"2022",value:3.1},
+  {year:"2023",value:3.2},
+  {year:"2024",value:3.35},
+  {year:"2025",value:3.45,projected:true},
+  {year:"2026",value:3.7,projected:true},
+];
+const jhEvOpts = {color:"#4a7c6b", yFormat: d => `$${d}M`, annotationX:"2020", annotationLabel:"COVID SHIFT", projected: true};
+
+// Bali evidence
+const baliEvidence = [
+  {year:"2018",value:85},
+  {year:"2019",value:92},
+  {year:"2020",value:28},
+  {year:"2021",value:35},
+  {year:"2022",value:68},
+  {year:"2023",value:110},
+  {year:"2024",value:145},
+  {year:"2025",value:175,projected:true},
+  {year:"2026",value:210,projected:true},
+];
+const baliEvOpts = {color:"#8a7a4a", yFormat: d => `$${d}`, annotationX:"2020", annotationLabel:"COVID LOW", projected: true};
+
+// Central London evidence
+const lonEvidence = [
+  {year:"2018",value:105},
+  {year:"2019",value:110},
+  {year:"2020",value:95},
+  {year:"2021",value:88},
+  {year:"2022",value:82},
+  {year:"2023",value:85},
+  {year:"2024",value:95},
+  {year:"2025",value:110,projected:true},
+  {year:"2026",value:135,projected:true},
+];
+const lonEvOpts = {color:"#4a6a8a", yFormat: d => `£${d}`, annotationX:"2022", annotationLabel:"RATE HIKE", projected: true};
+
+
+// ═══════════════════════════════════════
+// ASSET CARD FORECAST CHARTS
+// ═══════════════════════════════════════
+
+// JH asset forecast
+const jhForecast = [
+  {year:"2025",value:3.4},
+  {year:"2026",value:3.8},
+  {year:"2027",value:4.4},
+  {year:"2028",value:5.1,projected:true},
+  {year:"2029",value:5.8,projected:true},
+  {year:"2030",value:6.2,projected:true},
+  {year:"2031",value:6.5,projected:true},
+  {year:"2032",value:6.8,projected:true},
+];
+const jhFcOpts = {color:"#4a7c6b", yFormat: d => `$${d}M`, annotationX:"2028", annotationLabel:"PROJECTED", projected: true};
+
+// Bali asset forecast
+const baliForecast = [
+  {year:"2025",value:850},
+  {year:"2026",value:1050},
+  {year:"2027",value:1300},
+  {year:"2028",value:1600,projected:true},
+  {year:"2029",value:1950,projected:true},
+  {year:"2030",value:2200,projected:true},
+  {year:"2031",value:2450,projected:true},
+  {year:"2032",value:2600,projected:true},
+];
+const baliFcOpts = {color:"#8a7a4a", yFormat: d => `$${d>=1000?(d/1000).toFixed(1)+'K':d}`, annotationX:"2028", annotationLabel:"PROJECTED", projected: true};
+
+// London asset forecast
+const lonForecast = [
+  {year:"2025",value:95},
+  {year:"2026",value:110},
+  {year:"2027",value:130},
+  {year:"2028",value:150,projected:true},
+  {year:"2029",value:175,projected:true},
+  {year:"2030",value:195,projected:true},
+  {year:"2031",value:215,projected:true},
+  {year:"2032",value:230,projected:true},
+];
+const lonFcOpts = {color:"#4a6a8a", yFormat: d => `£${d}`, annotationX:"2028", annotationLabel:"PROJECTED", projected: true};
+
+// ═══════════════════════════════════════
+// DRAW ALL CHARTS (called on load + theme toggle)
+// ═══════════════════════════════════════
+function redrawAllCharts() {
+  // Read current theme colors for JH/Bali/Lon
+  const cs = getComputedStyle(document.documentElement);
+  const jhC = cs.getPropertyValue('--jh').trim();
+  const baliC = cs.getPropertyValue('--bali').trim();
+  const lonC = cs.getPropertyValue('--lon').trim();
+  const hubC = cs.getPropertyValue('--hub').trim();
+
+  // Pattern era charts
+  drawAreaChart("chart-sf", sfData, {...sfOpts, color: hubC});
+  drawAreaChart("chart-dubai", dubaiData, {...dubaiOpts, color: baliC});
+  drawAreaChart("chart-ai", aiData, {...aiOpts, color: hubC});
+
+  // Evidence charts
+  drawAreaChart("chart-jh-evidence", jhEvidence, {...jhEvOpts, color: jhC});
+  drawAreaChart("chart-bali-evidence", baliEvidence, {...baliEvOpts, color: baliC});
+  drawAreaChart("chart-lon-evidence", lonEvidence, {...lonEvOpts, color: lonC});
+
+  // Asset forecast charts
+  drawAreaChart("chart-asset-jh", jhForecast, {...jhFcOpts, color: jhC});
+  drawAreaChart("chart-asset-bali", baliForecast, {...baliFcOpts, color: baliC});
+  drawAreaChart("chart-asset-lon", lonForecast, {...lonFcOpts, color: lonC});
+}
+
+// Initial draw
+redrawAllCharts();
+
+</script>
+</body>
+</html>
