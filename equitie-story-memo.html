@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Equitie — Global Real Estate Vehicle</title>
+<title>Equitie | Global Real Estate Vehicle</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -50,10 +50,10 @@
   --hub: #4a6080;
   --accent: #5a6a82;
   --nav-bg: rgba(244,245,247,0.88);
-  --land-fill: #e2e8f0;
-  --land-stroke: #cbd5e0;
-  --grat-stroke: #edf2f7;
-  --map-bg: #f0f2f5;
+  --land-fill: #dce3ed;
+  --land-stroke: #b8c4d4;
+  --grat-stroke: #e8edf3;
+  --map-bg: #eef1f5;
   --chart-grid: rgba(0,0,0,0.06);
   --chart-grid-axis: rgba(0,0,0,0.1);
 }
@@ -106,6 +106,7 @@ body {
 .nav-link:hover, .nav-link.active { color: var(--text2); background: rgba(255,255,255,0.03); }
 [data-theme="light"] .nav-link:hover,
 [data-theme="light"] .nav-link.active { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .nav { box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
 
 /* ─── LAYOUT ─── */
 .page { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
@@ -115,31 +116,52 @@ section { padding: 64px 0 40px; }
 .hero {
   min-height: 100vh; display: flex; flex-direction: column;
   justify-content: center; align-items: center; text-align: center;
-  padding: 0 32px; position: relative;
-  background: url('mayfairbuildingroof.jpg') center/cover no-repeat;
+  padding: 0 32px; position: relative; overflow: hidden;
+}
+.hero-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 0;
 }
 .hero::before {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(8,9,12,0.88) 0%, rgba(8,9,12,0.78) 50%, rgba(8,9,12,0.92) 100%);
-  z-index: 0;
+  background: linear-gradient(180deg, rgba(8,9,12,0.65) 0%, rgba(8,9,12,0.55) 50%, rgba(8,9,12,0.78) 100%);
+  z-index: 1;
 }
 [data-theme="light"] .hero::before {
-  background: linear-gradient(180deg, rgba(244,245,247,0.88) 0%, rgba(244,245,247,0.78) 50%, rgba(244,245,247,0.92) 100%);
+  background: linear-gradient(180deg, rgba(244,245,247,0.72) 0%, rgba(244,245,247,0.62) 50%, rgba(244,245,247,0.82) 100%);
 }
-.hero > * { position: relative; z-index: 1; }
+.hero > *:not(.hero-video) { position: relative; z-index: 2; }
+[data-theme="light"] .hero .hero-sub { color: var(--text2); }
+[data-theme="light"] .hero-kicker { color: var(--text3); }
+[data-theme="light"] .hero-scroll {
+  color: var(--text2); border-color: rgba(0,0,0,0.2);
+}
+[data-theme="light"] .hero-scroll:hover {
+  border-color: rgba(0,0,0,0.4); color: var(--text1);
+  background: rgba(255,255,255,0.5);
+}
+
+/* Hero text staggered entrance */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .hero-kicker {
   font-size: 10px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 5px; color: var(--text5); margin-bottom: 24px;
+  animation: fadeInUp 1s ease 0.3s both;
 }
 .hero h1 {
-  font-size: 42px; font-weight: 300; color: var(--text1);
+  font-size: 48px; font-weight: 300; color: var(--text1);
   line-height: 1.2; max-width: 720px; letter-spacing: -0.5px;
-  margin-bottom: 16px;
+  margin-bottom: 16px; text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+  animation: fadeInUp 1s ease 0.6s both;
 }
 .hero h1 strong { font-weight: 700; }
 .hero .hero-sub {
   font-size: 16px; color: var(--text3); max-width: 520px;
   line-height: 1.7; margin-bottom: 48px;
+  animation: fadeInUp 1s ease 0.9s both;
 }
 .hero-scroll {
   font-size: 10px; color: var(--text5); letter-spacing: 3px;
@@ -147,24 +169,35 @@ section { padding: 64px 0 40px; }
   padding: 12px 20px; border-radius: 8px;
   border: 1px solid var(--border);
   transition: all 0.3s;
+  animation: fadeInUp 1s ease 1.2s both;
 }
-.hero-scroll:hover { border-color: var(--border2); color: var(--text4); }
+.hero-scroll:hover { border-color: var(--border2); color: var(--text4); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
 
 /* ─── SECTION HEADERS ─── */
 .s-kicker {
   font-size: 9px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 4px; color: var(--text5); margin-bottom: 10px;
+  letter-spacing: 4px; color: var(--text4); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
 }
+.kicker-sep {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--text5); display: inline-block; vertical-align: middle;
+}
+[data-theme="light"] .kicker-sep { background: var(--text4); }
 .s-title {
-  font-size: 24px; font-weight: 600; color: var(--text1);
-  letter-spacing: -0.3px; margin-bottom: 6px; line-height: 1.25;
+  font-size: 24px; font-weight: 600; letter-spacing: -0.3px;
+  margin-bottom: 6px; line-height: 1.25;
+  background: linear-gradient(180deg, var(--text1) 0%, var(--text2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .s-subtitle {
   font-size: 14px; color: var(--text3); margin-bottom: 24px;
-  max-width: 560px; line-height: 1.6;
+  max-width: 560px; line-height: 1.7;
 }
+[data-theme="light"] .s-subtitle { color: var(--text2); }
 .s-divider {
-  width: 32px; height: 1px; background: var(--border2);
+  width: 48px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
   margin-bottom: 24px;
 }
 
@@ -194,8 +227,8 @@ section { padding: 64px 0 40px; }
   margin-bottom: 16px;
 }
 .pattern-era .pe-stat {
-  font-size: 32px; font-weight: 800; color: var(--text1);
-  letter-spacing: -1px; margin-bottom: 2px;
+  font-size: 36px; font-weight: 900; color: var(--text1);
+  letter-spacing: -1.5px; margin-bottom: 2px;
 }
 .pattern-era .pe-stat-label {
   font-size: 12px; color: var(--text3); font-weight: 500; margin-bottom: 16px;
@@ -238,7 +271,7 @@ section { padding: 64px 0 40px; }
   font-size: 12px; color: var(--text3); line-height: 1.6; margin-bottom: 8px;
 }
 .tw-highlight {
-  font-size: 20px; font-weight: 800; color: var(--text1);
+  font-size: 24px; font-weight: 900; color: var(--text1);
   letter-spacing: -0.5px; margin-bottom: 2px;
 }
 .tw-highlight-label {
@@ -258,7 +291,7 @@ section { padding: 64px 0 40px; }
 }
 
 /* ─── MAP ─── */
-.map-section { padding-bottom: 40px; }
+.map-section { padding-bottom: 48px; }
 .map-wrap {
   border-radius: 12px; overflow: hidden;
   background: var(--map-bg);
@@ -275,6 +308,11 @@ section { padding: 64px 0 40px; }
   background: var(--surface);
 }
 .ml-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--text4); font-weight: 500; }
+.ml-toggle { cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: opacity 0.2s, background 0.2s; user-select: none; }
+.ml-toggle:hover { background: var(--border); }
+.ml-toggle:not(.active) { opacity: 0.35; }
+.ml-toggle:not(.active) .ml-dot,
+.ml-toggle:not(.active) .ml-diamond { opacity: 0.3; }
 .ml-dot { width: 6px; height: 6px; border-radius: 50%; }
 .ml-diamond { width: 5px; height: 5px; transform: rotate(45deg); border-radius: 1px; }
 .map-tooltip {
@@ -294,8 +332,13 @@ section { padding: 64px 0 40px; }
   border: 1px solid var(--border); background: var(--border);
 }
 .flow-stage {
-  flex: 1; background: var(--surface); padding: 28px 20px; text-align: center;
-  position: relative;
+  flex: 1; background: var(--surface); padding: 32px 22px; text-align: center;
+  position: relative; transition: background 0.3s;
+}
+.flow-stage:hover { background: var(--surface2); }
+.flow-stage .fs-step {
+  font-size: 28px; font-weight: 900; color: var(--border2);
+  margin-bottom: 8px; letter-spacing: -1px;
 }
 .flow-stage .fs-num {
   font-size: 8px; font-weight: 700; text-transform: uppercase;
@@ -303,10 +346,8 @@ section { padding: 64px 0 40px; }
 }
 .flow-stage h4 { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 5px; }
 .flow-stage p { font-size: 11px; color: var(--text3); line-height: 1.5; }
-.flow-chevron {
-  position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
-  z-index: 2; color: var(--text5); font-size: 14px; font-weight: 300;
-}
+.flow-connector { display: none; }
+[data-theme="light"] .flow-stage .fs-step { color: rgba(0,0,0,0.08); }
 
 /* ─── ASSETS ─── */
 .assets-grid {
@@ -334,17 +375,16 @@ section { padding: 64px 0 40px; }
   margin-bottom: 4px; letter-spacing: -0.2px;
 }
 .asset-card .ac-tag {
-  font-size: 12px; color: var(--text3); font-style: italic;
+  font-size: 11px; color: var(--text3); font-style: italic;
   margin-bottom: 20px; line-height: 1.5;
 }
 .asset-card .ac-metrics { margin-bottom: 16px; }
 .ac-metric {
-  display: flex; justify-content: space-between; align-items: baseline;
   padding: 6px 0; border-bottom: 1px solid var(--border);
 }
 .ac-metric:last-child { border-bottom: none; }
-.ac-metric .acm-l { font-size: 10px; color: var(--text4); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-.ac-metric .acm-v { font-size: 13px; font-weight: 700; color: var(--text1); }
+.ac-metric .acm-l { font-size: 9px; color: var(--text4); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 1px; }
+.ac-metric .acm-v { font-size: 13px; font-weight: 600; color: var(--text1); display: block; }
 .asset-card .ac-return {
   padding: 12px 14px; border-radius: 8px;
   background: rgba(255,255,255,0.012);
@@ -363,19 +403,19 @@ section { padding: 64px 0 40px; }
 
 /* ─── ASSET CARD IMAGES ─── */
 .ac-img {
-  margin: -32px -24px 20px -24px; height: 180px; overflow: hidden;
+  margin: -32px -24px 20px -24px; height: 220px; overflow: hidden;
   position: relative;
 }
 .ac-img img {
   width: 100%; height: 100%; object-fit: cover;
-  filter: saturate(0.4); opacity: 0.7;
+  filter: saturate(0.75); opacity: 0.85;
   transition: opacity 0.4s ease, transform 0.6s ease, filter 0.4s ease;
 }
 .asset-card:hover .ac-img img {
-  transform: scale(1.03); opacity: 0.85; filter: saturate(0.6);
+  transform: scale(1.04); opacity: 1; filter: saturate(0.9);
 }
-[data-theme="light"] .ac-img img { opacity: 0.9; filter: saturate(0.7); }
-[data-theme="light"] .asset-card:hover .ac-img img { opacity: 1; filter: saturate(0.9); }
+[data-theme="light"] .ac-img img { opacity: 0.92; filter: saturate(0.85); }
+[data-theme="light"] .asset-card:hover .ac-img img { opacity: 1; filter: saturate(1); }
 [data-theme="light"] .asset-card .ac-return { background: rgba(0,0,0,0.03); }
 
 /* ─── THUMBNAIL STRIPS ─── */
@@ -383,12 +423,12 @@ section { padding: 64px 0 40px; }
   display: flex; gap: 6px; margin-top: 10px;
 }
 .thumb-strip img {
-  width: 48px; height: 32px; object-fit: cover;
-  border-radius: 4px; opacity: 0.5;
-  filter: saturate(0.3);
-  transition: opacity 0.3s, filter 0.3s;
+  width: 72px; height: 48px; object-fit: cover;
+  border-radius: 6px; opacity: 0.7;
+  filter: saturate(0.6);
+  transition: opacity 0.3s, filter 0.3s, transform 0.3s;
 }
-.thumb-strip img:hover { opacity: 0.8; filter: saturate(0.7); }
+.thumb-strip img:hover { opacity: 1; filter: saturate(1); transform: scale(1.05); }
 
 /* ─── TIMING ─── */
 .timing-grid {
@@ -404,17 +444,17 @@ section { padding: 64px 0 40px; }
 .tc-bg {
   position: absolute; inset: 0; z-index: 0;
   background-size: cover; background-position: center;
-  opacity: 0.04; transition: opacity 0.4s ease;
+  opacity: 0.08; transition: opacity 0.4s ease;
 }
-.timing-card:hover .tc-bg { opacity: 0.08; }
-[data-theme="light"] .tc-bg { opacity: 0.08; }
-[data-theme="light"] .timing-card:hover .tc-bg { opacity: 0.12; }
+.timing-card:hover .tc-bg { opacity: 0.15; }
+[data-theme="light"] .tc-bg { opacity: 0.12; }
+[data-theme="light"] .timing-card:hover .tc-bg { opacity: 0.18; }
 .timing-card > *:not(.tc-bg) { position: relative; z-index: 1; }
 .tc-market {
   font-size: 9px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 3px; margin-bottom: 10px;
 }
-.tc-label { font-size: 22px; font-weight: 700; color: var(--text1); margin-bottom: 4px; letter-spacing: -0.3px; }
+.tc-label { font-size: 24px; font-weight: 800; color: var(--text1); margin-bottom: 6px; letter-spacing: -0.5px; }
 .tc-desc { font-size: 11px; color: var(--text3); line-height: 1.55; }
 
 /* ─── RETURN ENGINE ─── */
@@ -429,14 +469,31 @@ section { padding: 64px 0 40px; }
 }
 .return-card:hover { background: var(--surface2); }
 .rc-icon {
-  width: 36px; height: 36px; border-radius: 8px;
+  width: 40px; height: 40px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 14px; font-size: 15px; color: var(--text3);
-  background: rgba(255,255,255,0.015); border: 1px solid var(--border);
+  margin: 0 auto 14px; font-size: 16px; color: var(--text2);
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid var(--border2);
+  transition: transform 0.3s, border-color 0.3s;
 }
+.return-card:hover .rc-icon { transform: scale(1.08); border-color: var(--accent); }
+.return-card { cursor: pointer; }
 .return-card h4 { font-size: 13px; font-weight: 600; color: var(--text1); margin-bottom: 6px; }
 .return-card p { font-size: 11px; color: var(--text3); line-height: 1.5; }
-[data-theme="light"] .rc-icon { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+.rc-detail {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.4s, padding 0.4s;
+  padding-top: 0;
+}
+.return-card.open .rc-detail {
+  max-height: 200px; opacity: 1; padding-top: 12px;
+}
+.rc-detail-item {
+  font-size: 11px; color: var(--text3); line-height: 1.5;
+  padding: 6px 0; border-top: 1px solid var(--border);
+}
+.rc-detail-item strong { color: var(--text2); font-weight: 600; margin-right: 4px; }
+[data-theme="light"] .rc-icon { background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02)); border-color: rgba(0,0,0,0.1); }
 
 /* ─── OUTCOME ─── */
 .outcome-box {
@@ -445,8 +502,21 @@ section { padding: 64px 0 40px; }
 }
 .outcome-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; }
 .outcome-item { text-align: center; }
-.oi-num { font-size: 40px; font-weight: 900; color: var(--text1); letter-spacing: -1px; margin-bottom: 4px; }
-.oi-label { font-size: 12px; color: var(--text2); line-height: 1.5; max-width: 160px; margin: 0 auto; }
+.oi-num {
+  font-size: 56px; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px;
+  background: linear-gradient(180deg, var(--text1) 20%, var(--text3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.oi-label { font-size: 12px; color: var(--text2); line-height: 1.5; max-width: 180px; margin: 0 auto 12px; }
+.oi-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.oi-badge {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid; background: transparent;
+  transition: background 0.2s, transform 0.2s;
+}
+.oi-badge:hover { transform: scale(1.05); }
+[data-theme="light"] .oi-badge:hover { background: rgba(0,0,0,0.03); }
 
 /* ─── DIVERSIFICATION ─── */
 .div-grid {
@@ -464,24 +534,41 @@ section { padding: 64px 0 40px; }
 /* ─── FOOTER ─── */
 .foot {
   text-align: center; font-size: 10px; color: var(--text5);
-  padding: 40px 0 60px; line-height: 1.7;
+  padding: 48px 32px 64px; line-height: 1.8;
   border-top: 1px solid var(--border);
+  max-width: 640px; margin: 0 auto;
+  letter-spacing: 0.2px;
 }
 
 /* ─── SCROLL REVEAL ─── */
 .reveal {
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Staggered children reveal */
+.reveal-stagger > * {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-stagger.visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 0.12s; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.19s; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.25s; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.30s; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 0.35s; }
 
 /* ─── CONNECTOR TEXT ─── */
 .connector {
   text-align: center; padding: 28px 0;
-  font-size: 14px; color: var(--text4); line-height: 1.8;
-  max-width: 480px; margin: 0 auto;
+  font-size: 15px; color: var(--text3); line-height: 1.8;
+  max-width: 480px; margin: 0 auto; font-weight: 300;
 }
-.connector strong { color: var(--text2); font-weight: 600; }
+.connector strong { color: var(--text1); font-weight: 600; }
+[data-theme="light"] .connector { color: var(--text2); }
 
 /* ─── CHARTS ─── */
 .chart-container {
@@ -521,18 +608,19 @@ section { padding: 64px 0 40px; }
   display: flex; align-items: flex-start; gap: 10px;
 }
 .ec-thumb {
-  width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
-  flex-shrink: 0; opacity: 0.7; filter: saturate(0.4);
+  width: 56px; height: 56px; border-radius: 8px; object-fit: cover;
+  flex-shrink: 0; opacity: 0.85; filter: saturate(0.7);
   transition: opacity 0.3s, filter 0.3s;
 }
-.evidence-card:hover .ec-thumb { opacity: 0.9; filter: saturate(0.7); }
-[data-theme="light"] .ec-thumb { opacity: 0.9; filter: saturate(0.7); }
+.evidence-card:hover .ec-thumb { opacity: 1; filter: saturate(1); }
+[data-theme="light"] .ec-thumb { opacity: 0.92; filter: saturate(0.85); }
 .ec-header-text { flex: 1; }
 .evidence-card .ec-stat {
   display: flex; justify-content: space-between; align-items: baseline;
   margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border);
 }
-.ec-stat .ec-big { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.ec-stat .ec-big { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; transition: transform 0.3s; }
+.evidence-card:hover .ec-big { transform: scale(1.05); }
 .ec-stat .ec-desc { font-size: 10px; color: var(--text4); text-align: right; max-width: 120px; }
 
 /* ─── ASSET CHART inside cards ─── */
@@ -556,7 +644,8 @@ section { padding: 64px 0 40px; }
 [data-theme="light"] .flow-wrap,
 [data-theme="light"] .outcome-box,
 [data-theme="light"] .map-wrap {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.06);
 }
 
 /* ─── EXPAND INDICATOR ─── */
@@ -566,7 +655,7 @@ section { padding: 64px 0 40px; }
 }
 .ei-label {
   font-size: 9px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 1px; color: var(--text5);
+  letter-spacing: 1px; color: var(--text4);
   transition: color 0.2s;
 }
 .ei-icon {
@@ -582,6 +671,91 @@ section { padding: 64px 0 40px; }
 .open > .expand-indicator .ei-icon { transform: rotate(45deg); }
 .open > .expand-indicator .ei-label { color: var(--text3); }
 
+/* ─── CINEMATIC DIVIDERS ─── */
+.cinematic-divider {
+  position: relative;
+  width: 100vw; margin-left: calc(-50vw + 50%);
+  height: 40vh; min-height: 300px;
+  overflow: hidden;
+}
+.cinematic-divider img,
+.cinematic-divider video {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(0.8);
+  transition: filter 0.4s;
+}
+.cinematic-divider::before {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg,
+    var(--bg) 0%,
+    rgba(8,9,12,0.15) 25%,
+    rgba(8,9,12,0.15) 75%,
+    var(--bg) 100%
+  );
+  pointer-events: none;
+}
+[data-theme="light"] .cinematic-divider::before {
+  background: linear-gradient(180deg,
+    var(--bg) 0%,
+    rgba(244,245,247,0.15) 25%,
+    rgba(244,245,247,0.15) 75%,
+    var(--bg) 100%
+  );
+}
+.cinematic-divider .divider-text {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center; padding: 0 32px;
+}
+.cinematic-divider .dt-kicker {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 5px; color: rgba(255,255,255,0.5); margin-bottom: 12px;
+}
+.cinematic-divider .dt-quote {
+  font-size: 22px; font-weight: 300; color: #fff;
+  max-width: 600px; line-height: 1.4; letter-spacing: -0.3px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+[data-theme="light"] .cinematic-divider .dt-kicker { color: rgba(0,0,0,0.5); }
+[data-theme="light"] .cinematic-divider .dt-quote { color: #1a1f2e; text-shadow: 0 2px 24px rgba(255,255,255,0.6); font-weight: 400; }
+
+/* ─── MAP VIGNETTE ─── */
+.map-wrap {
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.3);
+}
+[data-theme="light"] .map-wrap {
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.06);
+}
+.map-wrap::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, var(--map-bg) 100%);
+  z-index: 5;
+}
+
+/* ─── GLASSMORPHISM HOVER ─── */
+.asset-card:hover,
+.tw-card:hover,
+.timing-card:hover,
+.return-card:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12),
+              inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+/* ─── NAV HOVER ─── */
+.nav-link:hover { transform: translateY(-1px); }
+
+/* ─── CHART TOOLTIP ─── */
+.chart-tip {
+  position: absolute; pointer-events: none; z-index: 10;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 6px 10px; font-size: 11px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  opacity: 0; transition: opacity 0.15s;
+  white-space: nowrap; font-weight: 600; color: var(--text1);
+  font-family: 'Inter', sans-serif;
+}
+.chart-tip.visible { opacity: 1; }
+
 /* ─── FOCUS STATES ─── */
 .nav-link:focus-visible,
 .hero-scroll:focus-visible,
@@ -592,6 +766,110 @@ section { padding: 64px 0 40px; }
 .tw-card:focus-visible,
 .asset-card:focus-visible {
   outline: 2px solid var(--accent); outline-offset: -2px;
+}
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 1200px) {
+  .assets-grid { grid-template-columns: 1fr; }
+  .evidence-grid { grid-template-columns: 1fr; }
+  .timing-grid { grid-template-columns: 1fr; }
+  .div-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 1024px) {
+  .pattern-timeline { flex-direction: column; }
+  .return-grid { grid-template-columns: 1fr 1fr; }
+  .outcome-grid { grid-template-columns: 1fr 1fr; }
+  .flow-wrap { flex-direction: column; }
+  .flow-connector { display: none; }
+}
+
+@media (max-width: 768px) {
+  .page { padding: 0 16px; }
+  section { padding: 48px 0 28px; }
+
+  /* Nav */
+  .nav { padding: 0 16px; height: 44px; }
+  .nav-logo { font-size: 10px; letter-spacing: 3px; }
+  .nav-links { display: none; }
+
+  /* Hero */
+  .hero { padding: 0 20px; min-height: 90vh; }
+  .hero-kicker { font-size: 8px; letter-spacing: 4px; margin-bottom: 16px; }
+  .hero h1 { font-size: 28px; max-width: 100%; }
+  .hero .hero-sub { font-size: 13px; max-width: 100%; margin-bottom: 32px; }
+  .hero-scroll { font-size: 9px; padding: 10px 16px; }
+
+  /* Section headers */
+  .s-title { font-size: 20px; }
+  .s-subtitle { font-size: 13px; }
+  .s-kicker { font-size: 8px; letter-spacing: 3px; }
+
+  /* Pattern */
+  .pattern-timeline { flex-direction: column; }
+  .pattern-era { padding: 24px 20px; }
+  .pattern-era .pe-stat { font-size: 28px; }
+  .connector { font-size: 13px; padding: 20px 0; }
+
+  /* Tailwinds */
+  .tw-grid { grid-template-columns: 1fr; }
+  .tw-card { padding: 22px 18px; }
+  .tw-highlight { font-size: 20px; }
+
+  /* Map */
+  .map-legend-bar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+  .ml-toggle { padding: 3px 6px; }
+
+  /* Evidence */
+  .evidence-grid { grid-template-columns: 1fr; }
+  .evidence-card { padding: 20px 16px; }
+  .ec-stat .ec-big { font-size: 22px; }
+
+  /* Flow / Structure */
+  .flow-wrap { flex-direction: column; }
+  .flow-stage { padding: 24px 18px; }
+  .flow-connector { display: none; }
+  .flow-stage .fs-step { font-size: 22px; }
+
+  /* Assets */
+  .assets-grid { grid-template-columns: 1fr; }
+  .asset-card { padding: 24px 18px; }
+  .ac-img { margin: -24px -18px 16px -18px; height: 200px; }
+  .ac-name { font-size: 16px; }
+  .thumb-strip { flex-wrap: wrap; }
+
+  /* Timing */
+  .timing-grid { grid-template-columns: 1fr; }
+  .timing-card { padding: 24px 18px; }
+  .tc-label { font-size: 20px; }
+
+  /* Returns */
+  .return-grid { grid-template-columns: 1fr 1fr; }
+  .return-card { padding: 22px 16px; }
+
+  /* Outcome */
+  .outcome-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .outcome-box { padding: 28px 20px; }
+  .oi-num { font-size: 44px; }
+
+  /* Diversification */
+  .div-grid { grid-template-columns: 1fr; }
+
+  /* Cinematic dividers */
+  .cinematic-divider { height: 30vh; min-height: 220px; }
+  .cinematic-divider .dt-quote { font-size: 17px; }
+
+  /* Footer */
+  .foot { padding: 32px 16px 48px; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 24px; }
+  .hero .hero-sub { font-size: 12px; }
+  .return-grid { grid-template-columns: 1fr; }
+  .outcome-grid { grid-template-columns: 1fr; gap: 16px; }
+  .oi-num { font-size: 40px; }
+  .pattern-era .pe-stat { font-size: 24px; }
+  .tw-highlight { font-size: 18px; }
+  .ec-stat .ec-big { font-size: 20px; }
 }
 </style>
 </head>
@@ -616,81 +894,96 @@ section { padding: 64px 0 40px; }
 <div class="page">
 
 <!-- ═══════ ACT 0: HERO ═══════ -->
+</div><!-- close .page for full-bleed hero -->
 <section class="hero" id="hero">
-  <div class="hero-kicker">Investment Thesis — Confidential</div>
+  <video class="hero-video" autoplay muted loop playsinline poster="mayfairbuildingroof.jpg">
+    <source src="hero-video.mp4" type="video/mp4">
+  </video>
+  <div class="hero-kicker">Investment Thesis</div>
   <h1><strong>Every tech wealth cycle</strong> reshapes real estate.<br>This is the AI cycle.</h1>
   <div class="hero-sub">
     A concentrated vehicle capturing capital flows, income generation, and cycle dislocation across three structurally supply-constrained global markets.
   </div>
-  <button class="hero-scroll" onclick="scrollTo('#pattern')">Begin ↓</button>
+  <button class="hero-scroll" onclick="scrollTo('#pattern')">Explore</button>
 </section>
+
+<div class="page">
 
 <!-- ═══════ ACT 1: THE PATTERN ═══════ -->
 <section id="pattern">
   <div class="reveal">
-    <div class="s-kicker">Act I — The Pattern</div>
+    <div class="s-kicker">Act I <span class="kicker-sep"></span> The Pattern</div>
     <div class="s-title">This has happened before. Twice.</div>
     <div class="s-subtitle">
-      Tech wealth cycles create concentrated liquidity events. That capital migrates — predictably — into scarce real assets. The destination changes. The pattern does not.
+      Tech wealth cycles create concentrated liquidity events. That capital migrates, predictably, into scarce real assets. The destination changes. The pattern does not.
     </div>
   </div>
 
-  <div class="pattern-timeline reveal">
+  <div class="pattern-timeline reveal reveal-stagger">
     <div class="pattern-era" onclick="toggleEra(this)">
       <div class="pe-period">1997 – 2005</div>
       <h3>The Dotcom Boom</h3>
-      <div class="pe-arrow">IPO wealth → San Francisco</div>
+      <div class="pe-arrow">IPO wealth to San Francisco</div>
       <div class="pe-stat">2.2×</div>
       <div class="pe-stat-label">SF median home price increase</div>
       <div id="chart-sf" class="chart-container"></div>
       <div class="pe-detail">
-        258,000 new millionaires created in the Bay Area at peak. Median home price surged from $290K to $640K. Wealth concentrated in a 50-mile radius around Sand Hill Road. Post-crash, prices never returned to pre-boom levels — the floor was permanently reset.
+        258,000 new millionaires created in the Bay Area at peak. Median home price surged from $290K to $640K. Wealth concentrated in a 50-mile radius around Sand Hill Road. Post-crash, prices never returned to pre-boom levels. The floor was permanently reset.
       </div>
       <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
     <div class="pattern-era" onclick="toggleEra(this)">
       <div class="pe-period">2020 – 2025</div>
       <h3>The Crypto Boom</h3>
-      <div class="pe-arrow">Token wealth → Dubai &amp; Miami</div>
+      <div class="pe-arrow">Token wealth to Dubai and Miami</div>
       <div class="pe-stat">3.3×</div>
       <div class="pe-stat-label">Dubai price/sqft increase from trough</div>
       <div id="chart-dubai" class="chart-container"></div>
       <div class="pe-detail">
-        Zero income and capital gains tax drew crypto wealth to the UAE. Over $110B in crypto capital flowed into Dubai real estate. Entire neighborhoods repriced. The globally mobile, tax-sensitive buyer chose Dubai over London and Singapore — reshaping the market permanently.
+        Zero income and capital gains tax drew crypto wealth to the UAE. Over $110B in crypto capital flowed into Dubai real estate. Entire neighborhoods repriced. The globally mobile, tax-sensitive buyer chose Dubai over London and Singapore, reshaping the market permanently.
       </div>
       <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
     <div class="pattern-era current" onclick="toggleEra(this)">
       <div class="pe-period">2024 – 2032</div>
       <h3>The AI Boom</h3>
-      <div class="pe-arrow">AI wealth → Global scarcity assets</div>
+      <div class="pe-arrow">AI wealth to global scarcity assets</div>
       <div class="pe-stat">$10.7T</div>
       <div class="pe-stat-label">Projected AI-generated wealth across 5 hubs</div>
       <div id="chart-ai" class="chart-container"></div>
       <div class="pe-detail">
-        This cycle is different in one critical way: AI wealth is being created simultaneously across five global hubs. The capital is more distributed, the buyers are younger and more lifestyle-driven, and they are choosing assets based on scarcity, tax efficiency, and quality of life — not proximity to an office.
+        This cycle is different in one critical way: AI wealth is being created simultaneously across five global hubs. The capital is more distributed, the buyers are younger and more lifestyle-driven, and they are choosing assets based on scarcity, tax efficiency, and quality of life, not proximity to an office.
       </div>
       <div class="expand-indicator"><span class="ei-label">Details</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
   </div>
 
   <div class="connector reveal">
-    The pattern is clear: <strong>concentrated wealth creation → lifestyle migration → price explosion</strong> in supply-constrained markets.<br><br>
+    The pattern is clear: <strong>concentrated wealth creation leads to lifestyle migration, then price explosion</strong> in supply-constrained markets.<br><br>
     The question is not whether this happens. It is <strong>which assets</strong> capture the flow.
   </div>
 </section>
 
+<!-- ═══════ DIVIDER: Pattern → Tailwinds ═══════ -->
+<div class="cinematic-divider reveal">
+  <img src="divider-desk-mountains.png" alt="Luxury investment environment" loading="lazy">
+  <div class="divider-text">
+    <div class="dt-kicker">The Opportunity</div>
+    <div class="dt-quote">The destination changes. The pattern does not.</div>
+  </div>
+</div>
+
 <!-- ═══════ ACT 2: TAILWINDS ═══════ -->
 <section id="tailwinds">
   <div class="reveal">
-    <div class="s-kicker">Act II — The Tailwinds</div>
+    <div class="s-kicker">Act II <span class="kicker-sep"></span> The Tailwinds</div>
     <div class="s-title">Six forces converging now</div>
     <div class="s-subtitle">
       Each tailwind is independently significant. Together, they create a compounding demand environment for scarce real assets.
     </div>
   </div>
 
-  <div class="tw-grid reveal">
+  <div class="tw-grid reveal reveal-stagger">
     <div class="tw-card" onclick="toggleTw(this)">
       <div class="tw-num">01</div>
       <h3>AI-Driven Wealth Expansion</h3>
@@ -699,9 +992,9 @@ section { padding: 64px 0 40px; }
       <div class="tw-highlight-label">Projected UHNW growth</div>
       <div class="tw-data">
         <strong>UHNW population:</strong> +5–7% CAGR projected over 5 years<br>
-        <strong>Cycle precedent:</strong> Dot-com → SF, Crypto → Dubai, AI → Global<br>
-        <strong>Buyer profile:</strong> Younger, globally mobile, lifestyle + status driven<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Incremental marginal buyer prefers scarcity assets</div>
+        <strong>Cycle precedent:</strong> Dot-com to SF, Crypto to Dubai, AI to Global<br>
+        <strong>Buyer profile:</strong> Younger, globally mobile, lifestyle and status driven<br>
+        <div class="tw-impl" style="color:var(--jh);">Incremental marginal buyer prefers scarcity assets</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
@@ -714,9 +1007,9 @@ section { padding: 64px 0 40px; }
       <div class="tw-highlight-label">Family office real asset allocation</div>
       <div class="tw-data">
         <strong>Family offices:</strong> Allocation to real assets increasing structurally<br>
-        <strong>Cross-border flows:</strong> MENA → UK / US / Asia accelerating<br>
+        <strong>Cross-border flows:</strong> MENA to UK, US, and Asia accelerating<br>
         <strong>Private RE:</strong> Under-allocated vs equities in most UHNW portfolios<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Prime real estate = store of value + social signal</div>
+        <div class="tw-impl" style="color:var(--jh);">Prime real estate as store of value and social signal</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
@@ -728,10 +1021,10 @@ section { padding: 64px 0 40px; }
       <div class="tw-highlight">~0%</div>
       <div class="tw-highlight-label">Net new prime supply</div>
       <div class="tw-data">
-        <strong>Jackson Hole:</strong> Extreme zoning + environmental restrictions<br>
+        <strong>Jackson Hole:</strong> Extreme zoning and environmental restrictions<br>
         <strong>Central London:</strong> Heritage planning rules, near-zero new prime supply<br>
         <strong>Bali:</strong> Land scarcity in premium zones, infrastructure lag<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Structural scarcity = sustained pricing power</div>
+        <div class="tw-impl" style="color:var(--jh);">Structural scarcity creates sustained pricing power</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
@@ -744,9 +1037,9 @@ section { padding: 64px 0 40px; }
       <div class="tw-highlight-label">Private jet to SFO</div>
       <div class="tw-data">
         <strong>Jackson Hole:</strong> Seasonal elite living, 90 min private jet to SFO<br>
-        <strong>Bali:</strong> Work + holiday hybrid, digital nomad visa active<br>
+        <strong>Bali:</strong> Work and holiday hybrid, digital nomad visa active<br>
         <strong>London:</strong> Premium flexible office, walkable cultural hub<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Demand is identity-driven and non-cyclical</div>
+        <div class="tw-impl" style="color:var(--jh);">Demand is identity-driven and non-cyclical</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
@@ -754,29 +1047,29 @@ section { padding: 64px 0 40px; }
     <div class="tw-card" onclick="toggleTw(this)">
       <div class="tw-num">05</div>
       <h3>Timing Dislocation</h3>
-      <div class="tw-desc">Each market offers a distinct cycle entry point — cyclical correction in London, structural inflection in Bali, proven demand in Jackson Hole.</div>
+      <div class="tw-desc">Each market offers a distinct cycle entry point: cyclical correction in London, structural inflection in Bali, proven demand in Jackson Hole.</div>
       <div class="tw-highlight">3 distinct</div>
       <div class="tw-highlight-label">Cycle entry points</div>
       <div class="tw-data">
-        <strong>UK:</strong> Post-rate hike correction — distressed / mispriced assets<br>
-        <strong>US:</strong> Strong bid at top end — proven, liquid market<br>
-        <strong>Bali:</strong> Early-stage institutionalization — fragmented operator market<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Entry at cyclical lows, structural inflection, proven demand</div>
+        <strong>UK:</strong> Post-rate hike correction, distressed and mispriced assets<br>
+        <strong>US:</strong> Strong bid at top end, proven liquid market<br>
+        <strong>Bali:</strong> Early-stage institutionalization, fragmented operator market<br>
+        <div class="tw-impl" style="color:var(--jh);">Entry at cyclical lows, structural inflection, proven demand</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
 
     <div class="tw-card" onclick="toggleTw(this)">
       <div class="tw-num">06</div>
-      <h3>Yield + Leverage Dynamics</h3>
-      <div class="tw-desc">Hybrid return profile combining income generation, development upside, and leverage amplification — without venture-style risk or binary outcomes.</div>
+      <h3>Yield and Leverage Dynamics</h3>
+      <div class="tw-desc">Hybrid return profile combining income generation, development upside, and leverage amplification without venture-style risk or binary outcomes.</div>
       <div class="tw-highlight">12–18%</div>
       <div class="tw-highlight-label">Target net IRR</div>
       <div class="tw-data">
         <strong>Income:</strong> Hospitality daily cash flow (Bali), stabilized rent (London)<br>
         <strong>Leverage:</strong> Debt on stabilized assets enhances IRR<br>
-        <strong>Recycling:</strong> Cash flow → reinvestment, development → lump-sum exits<br>
-        <div class="tw-impl" style="color:var(--jh);">→ Yield + growth + leverage amplification</div>
+        <strong>Recycling:</strong> Cash flow into reinvestment, development into lump-sum exits<br>
+        <div class="tw-impl" style="color:var(--jh);">Yield, growth, and leverage amplification</div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Evidence</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
     </div>
@@ -790,8 +1083,8 @@ section { padding: 64px 0 40px; }
 <!-- ═══════ ACT 3: MAP ═══════ -->
 <section id="map" class="map-section">
   <div class="reveal">
-    <div class="s-kicker">Act III — The Flows</div>
-    <div class="s-title">Where AI wealth is created — and where it migrates</div>
+    <div class="s-kicker">Act III <span class="kicker-sep"></span> The Flows</div>
+    <div class="s-title">Where AI wealth is created, and where it migrates</div>
     <div class="s-subtitle">
       Five creation hubs. Three destination markets. Capital flows along predictable paths from concentrated wealth centers to scarce, lifestyle-aligned assets.
     </div>
@@ -801,13 +1094,13 @@ section { padding: 64px 0 40px; }
     <div class="map-tooltip" id="tooltip"></div>
   </div>
   <div class="map-legend-bar">
-    <div class="ml-item"><div class="ml-dot" style="background:var(--hub);"></div> AI Wealth Hub</div>
-    <div class="ml-item"><div class="ml-diamond" style="background:var(--jh);"></div> Jackson Hole</div>
-    <div class="ml-item"><div class="ml-diamond" style="background:var(--bali);"></div> Bali</div>
-    <div class="ml-item"><div class="ml-diamond" style="background:var(--lon);"></div> Central London</div>
-    <div class="ml-item">
-      <svg width="16" height="4"><line x1="0" y1="2" x2="16" y2="2" stroke="#2a3545" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>
-      Capital Flow
+    <div class="ml-item ml-toggle active" onclick="toggleMapLayer('hubs')" data-layer="hubs"><div class="ml-dot" style="background:var(--hub);"></div> AI Wealth Hubs</div>
+    <div class="ml-item ml-toggle active" onclick="toggleMapLayer('jh')" data-layer="jh"><div class="ml-diamond" style="background:var(--jh);"></div> Jackson Hole</div>
+    <div class="ml-item ml-toggle active" onclick="toggleMapLayer('bali')" data-layer="bali"><div class="ml-diamond" style="background:var(--bali);"></div> Bali</div>
+    <div class="ml-item ml-toggle active" onclick="toggleMapLayer('clon')" data-layer="clon"><div class="ml-diamond" style="background:var(--lon);"></div> Central London</div>
+    <div class="ml-item ml-toggle active" onclick="toggleMapLayer('flows')" data-layer="flows">
+      <svg width="16" height="4"><line x1="0" y1="2" x2="16" y2="2" stroke="var(--text4)" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>
+      Capital Flows
     </div>
   </div>
 </section>
@@ -821,12 +1114,12 @@ section { padding: 64px 0 40px; }
       Historical data for Jackson Hole and Central London. Early-stage pricing data for Bali. All three showing structural upward pressure consistent with wealth migration thesis.
     </div>
   </div>
-  <div class="evidence-grid reveal">
+  <div class="evidence-grid reveal reveal-stagger">
     <div class="evidence-card">
       <div class="ec-header">
         <img class="ec-thumb" src="jacksonholecottage.jpeg" alt="Jackson Hole cottage" loading="lazy">
         <div class="ec-header-text">
-          <div class="ec-title" style="color:var(--jh);">Jackson Hole — Luxury Residential</div>
+          <div class="ec-title" style="color:var(--jh);">Jackson Hole <span class="kicker-sep"></span> Luxury Residential</div>
           <div class="ec-subtitle">Median sale price, $M (2018–2026E)</div>
         </div>
       </div>
@@ -840,7 +1133,7 @@ section { padding: 64px 0 40px; }
       <div class="ec-header">
         <img class="ec-thumb" src="morabitobeach.jpg" alt="Bali beachfront" loading="lazy">
         <div class="ec-header-text">
-          <div class="ec-title" style="color:var(--bali);">Bali — Premium Hospitality RevPAR</div>
+          <div class="ec-title" style="color:var(--bali);">Bali <span class="kicker-sep"></span> Premium Hospitality RevPAR</div>
           <div class="ec-subtitle">Revenue per available room, USD (2018–2026E)</div>
         </div>
       </div>
@@ -854,52 +1147,63 @@ section { padding: 64px 0 40px; }
       <div class="ec-header">
         <img class="ec-thumb" src="mayfairofficedoor.jpeg" alt="Mayfair office entrance" loading="lazy">
         <div class="ec-header-text">
-          <div class="ec-title" style="color:var(--lon);">Central London — Prime Office Rent</div>
+          <div class="ec-title" style="color:var(--lon);">Central London <span class="kicker-sep"></span> Prime Office Rent</div>
           <div class="ec-subtitle">Average rent £/sqft, Mayfair-Soho (2018–2026E)</div>
         </div>
       </div>
       <div id="chart-lon-evidence"></div>
       <div class="ec-stat">
-        <span class="ec-big" style="color:var(--lon);">£95→£135</span>
+        <span class="ec-big" style="color:var(--lon);">£95 to £135</span>
         <span class="ec-desc">Recovery underway after 2022–23 correction</span>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ═══════ DIVIDER: Evidence → Structure ═══════ -->
+<div class="cinematic-divider reveal">
+  <video autoplay muted loop playsinline preload="none">
+    <source src="luxury-loop-1.mp4" type="video/mp4">
+  </video>
+</div>
+
 <!-- ═══════ ACT 4: STRUCTURE ═══════ -->
 <section id="structure">
   <div class="reveal">
-    <div class="s-kicker">Act IV — The Vehicle</div>
+    <div class="s-kicker">Act IV <span class="kicker-sep"></span> The Vehicle</div>
     <div class="s-title">Capital structure</div>
     <div class="s-subtitle">
       A concentrated allocation vehicle with active management and selective leverage, deploying into three structurally distinct, supply-constrained assets.
     </div>
   </div>
 
-  <div class="flow-wrap reveal">
+  <div class="flow-wrap reveal reveal-stagger">
     <div class="flow-stage">
+      <div class="fs-step">01</div>
       <div class="fs-num">Capital In</div>
       <h4>Investors</h4>
       <p>UHNW individuals, family offices, and global capital seeking real asset exposure with income and growth</p>
-      <div class="flow-chevron">›</div>
+
     </div>
     <div class="flow-stage">
+      <div class="fs-step">02</div>
       <div class="fs-num">Vehicle</div>
       <h4>Concentrated Allocation</h4>
       <p>Active management with selective leverage across three assets, three geographies, and three return types</p>
-      <div class="flow-chevron">›</div>
+
     </div>
     <div class="flow-stage">
+      <div class="fs-step">03</div>
       <div class="fs-num">Deployment</div>
       <h4>3 Scarcity Assets</h4>
       <p>Jackson Hole luxury development, Bali wellness hospitality, Central London prime offices</p>
-      <div class="flow-chevron">›</div>
+
     </div>
     <div class="flow-stage">
+      <div class="fs-step">04</div>
       <div class="fs-num">Returns</div>
       <h4>Hybrid Engine</h4>
-      <p>Income + development margin + leverage amplification + cap rate compression at exit</p>
+      <p>Income, development margin, leverage amplification, and cap rate compression at exit</p>
     </div>
   </div>
 </section>
@@ -907,19 +1211,19 @@ section { padding: 64px 0 40px; }
 <!-- ═══════ ACT 5: ASSETS ═══════ -->
 <section id="assets">
   <div class="reveal">
-    <div class="s-kicker">Act V — The Three Assets</div>
+    <div class="s-kicker">Act V <span class="kicker-sep"></span> The Three Assets</div>
     <div class="s-title">Three markets. Three strategies. One thesis.</div>
     <div class="s-subtitle">
       Each asset is independently compelling. Together they provide geographic, use-case, and return-type diversification within a single concentrated vehicle.
     </div>
   </div>
 
-  <div class="assets-grid reveal">
+  <div class="assets-grid reveal reveal-stagger">
     <div class="asset-card jh" onclick="toggleAsset(this)">
       <div class="ac-img"><img src="jacksonhole4seasons.jpg" alt="Jackson Hole" loading="lazy"></div>
       <div class="ac-loc">Jackson Hole, Wyoming</div>
       <div class="ac-name">Scarcity-Driven Development</div>
-      <div class="ac-tag">"The new Hamptons for AI wealth — extreme zoning meets unlimited demand"</div>
+      <div class="ac-tag">"The new Hamptons for AI wealth. Extreme zoning meets unlimited demand."</div>
       <div class="ac-chart-wrap">
         <div class="ac-chart-label">Projected Price Trajectory ($M)</div>
         <div id="chart-asset-jh"></div>
@@ -929,7 +1233,7 @@ section { padding: 64px 0 40px; }
         <div class="ac-metric"><span class="acm-l">Asset Type</span><span class="acm-v">Luxury residential estates</span></div>
         <div class="ac-metric"><span class="acm-l">Supply</span><span class="acm-v">Near-zero new supply</span></div>
         <div class="ac-metric"><span class="acm-l">Tax</span><span class="acm-v">0% state income tax (WY)</span></div>
-        <div class="ac-metric"><span class="acm-l">Access</span><span class="acm-v">90 min private jet → SFO/SEA</span></div>
+        <div class="ac-metric"><span class="acm-l">Access</span><span class="acm-v">90 min private jet to SFO</span></div>
       </div>
       <div class="ac-return">
         <div class="acr-label">Return Driver</div>
@@ -937,6 +1241,8 @@ section { padding: 64px 0 40px; }
         <div class="thumb-strip">
           <img src="jacksonholeaerial.jpeg" alt="Jackson Hole aerial view" loading="lazy">
           <img src="jacksonholetop.jpeg" alt="Jackson Hole mountain vista" loading="lazy">
+          <img src="jacksonholeski.jpg" alt="Jackson Hole ski resort" loading="lazy">
+          <img src="yellowstonenationalpark.jpg" alt="Yellowstone Grand Prismatic" loading="lazy">
         </div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
@@ -946,7 +1252,7 @@ section { padding: 64px 0 40px; }
       <div class="ac-img"><img src="morabitohotelpool.jpg" alt="Bali" loading="lazy"></div>
       <div class="ac-loc">Bali, Indonesia</div>
       <div class="ac-name">High-Yield Lifestyle Hospitality</div>
-      <div class="ac-tag">"Global wellness capital — where Singapore and Sydney wealth decompresses"</div>
+      <div class="ac-tag">"Global wellness capital. Where Singapore and Sydney wealth decompresses."</div>
       <div class="ac-chart-wrap">
         <div class="ac-chart-label">Projected Nightly Rate (USD)</div>
         <div id="chart-asset-bali"></div>
@@ -964,6 +1270,8 @@ section { padding: 64px 0 40px; }
         <div class="thumb-strip">
           <img src="morabitohotel.jpg" alt="Morabito resort exterior" loading="lazy">
           <img src="morabitobathtub.jpg" alt="Luxury villa bathroom" loading="lazy">
+          <img src="morabitoindoor.jpg" alt="Morabito indoor luxury" loading="lazy">
+          <img src="morabitoroom.jpg" alt="Morabito luxury room" loading="lazy">
         </div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
@@ -982,7 +1290,7 @@ section { padding: 64px 0 40px; }
         <div class="ac-metric"><span class="acm-l">Strategy</span><span class="acm-v">Acquire, reposition, stabilize</span></div>
         <div class="ac-metric"><span class="acm-l">Asset Type</span><span class="acm-v">Boutique offices &lt;3,000 sqft</span></div>
         <div class="ac-metric"><span class="acm-l">Cycle</span><span class="acm-v">Post-correction entry</span></div>
-        <div class="ac-metric"><span class="acm-l">Tenants</span><span class="acm-v">DeepMind + AI startups</span></div>
+        <div class="ac-metric"><span class="acm-l">Tenants</span><span class="acm-v">DeepMind, AI startups</span></div>
         <div class="ac-metric"><span class="acm-l">Zones</span><span class="acm-v">Mayfair · Soho · Fitzrovia</span></div>
       </div>
       <div class="ac-return">
@@ -991,6 +1299,8 @@ section { padding: 64px 0 40px; }
         <div class="thumb-strip">
           <img src="mayfairbuildingroof.jpg" alt="Mayfair building rooftop" loading="lazy">
           <img src="mayfairofficemeetingroom.jpeg" alt="Mayfair meeting room" loading="lazy">
+          <img src="mayfairofficeindoor.jpg" alt="Mayfair office interior" loading="lazy">
+          <img src="mayfairofficedoor.jpeg" alt="Mayfair office entrance" loading="lazy">
         </div>
       </div>
       <div class="expand-indicator"><span class="ei-label">Return detail</span><span class="ei-icon"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="2" x2="5" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></span></div>
@@ -998,20 +1308,29 @@ section { padding: 64px 0 40px; }
   </div>
 </section>
 
+<!-- ═══════ DIVIDER: Assets → Timing ═══════ -->
+<div class="cinematic-divider reveal">
+  <img src="divider-columns-water.png" alt="Luxury architectural environment" loading="lazy">
+  <div class="divider-text">
+    <div class="dt-kicker">Three Markets</div>
+    <div class="dt-quote">Each independently compelling. Together, uncorrelated.</div>
+  </div>
+</div>
+
 <!-- ═══════ TIMING ═══════ -->
 <section>
   <div class="reveal">
-    <div class="s-kicker">Act VI — Cycle Entry</div>
+    <div class="s-kicker">Act VI <span class="kicker-sep"></span> Cycle Entry</div>
     <div class="s-title">Three distinct entry points</div>
     <div class="s-divider"></div>
   </div>
 
-  <div class="timing-grid reveal">
+  <div class="timing-grid reveal reveal-stagger">
     <div class="timing-card">
       <div class="tc-bg" style="background-image:url('mayfairofficeindoor.jpg')"></div>
       <div class="tc-market" style="color:var(--lon);">United Kingdom</div>
       <div class="tc-label">Cyclical Low</div>
-      <div class="tc-desc">Post-rate hike correction. Distressed and mispriced assets. Institutional capital on the sidelines — not yet fully deployed.</div>
+      <div class="tc-desc">Post-rate hike correction. Distressed and mispriced assets. Institutional capital on the sidelines, not yet fully deployed.</div>
     </div>
     <div class="timing-card">
       <div class="tc-bg" style="background-image:url('morabitoroom.jpg')"></div>
@@ -1028,41 +1347,62 @@ section { padding: 64px 0 40px; }
   </div>
 
   <div class="connector reveal">
-    The portfolio is designed to <strong>harvest dislocation</strong> in London, <strong>ride structural growth</strong> in Bali, and <strong>access proven demand</strong> in Jackson Hole — all within a single vehicle.
+    The portfolio is designed to <strong>harvest dislocation</strong> in London, <strong>ride structural growth</strong> in Bali, and <strong>access proven demand</strong> in Jackson Hole, all within a single vehicle.
   </div>
 </section>
 
 <!-- ═══════ ACT 7: RETURN ENGINE ═══════ -->
 <section id="returns">
   <div class="reveal">
-    <div class="s-kicker">Act VII — The Return Engine</div>
+    <div class="s-kicker">Act VII <span class="kicker-sep"></span> The Return Engine</div>
     <div class="s-title">Four sources of return. One amplifying structure.</div>
     <div class="s-divider"></div>
   </div>
 
-  <div class="return-grid reveal">
-    <div class="return-card">
-      <div class="rc-icon">&#x21BB;</div>
+  <div class="return-grid reveal reveal-stagger">
+    <div class="return-card" onclick="this.classList.toggle('open')">
+      <div class="rc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
       <h4>Income</h4>
       <p>Hospitality daily cash flow and stabilized office rent provide recurring yield across the portfolio</p>
+      <div class="rc-detail">
+        <div class="rc-detail-item"><strong>Bali</strong> Daily hospitality revenue from ultra-luxury eco-resort operations</div>
+        <div class="rc-detail-item"><strong>London</strong> Stabilized office rental income from premium AI-sector tenants</div>
+      </div>
     </div>
-    <div class="return-card">
-      <div class="rc-icon">&#x25B3;</div>
+    <div class="return-card" onclick="this.classList.toggle('open')">
+      <div class="rc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8"/></svg></div>
       <h4>Development</h4>
       <p>Ground-up development margin on luxury residential with lump-sum exit on completed product</p>
+      <div class="rc-detail">
+        <div class="rc-detail-item"><strong>Jackson Hole</strong> Ground-up luxury residential in supply-constrained market</div>
+        <div class="rc-detail-item"><strong>Exit</strong> Lump-sum on project completion at premium to cost basis</div>
+      </div>
     </div>
-    <div class="return-card">
-      <div class="rc-icon">&#x2922;</div>
+    <div class="return-card" onclick="this.classList.toggle('open')">
+      <div class="rc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17L17 7M17 7H10M17 7v7"/></svg></div>
       <h4>Leverage</h4>
       <p>Selective debt on stabilized and developable assets amplifies IRR without venture-style binary risk</p>
+      <div class="rc-detail">
+        <div class="rc-detail-item"><strong>Strategy</strong> Conservative LTV on stabilized assets only</div>
+        <div class="rc-detail-item"><strong>Impact</strong> IRR amplification with downside protection through asset quality</div>
+      </div>
     </div>
-    <div class="return-card">
-      <div class="rc-icon">&#x25C7;</div>
+    <div class="return-card" onclick="this.classList.toggle('open')">
+      <div class="rc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
       <h4>Multiple Expansion</h4>
       <p>Cap rate compression as markets recover and institutional capital reprices prime assets upward</p>
+      <div class="rc-detail">
+        <div class="rc-detail-item"><strong>London</strong> Post-correction recovery driving cap rate compression</div>
+        <div class="rc-detail-item"><strong>Bali</strong> Institutionalization repricing fragmented market upward</div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- ═══════ DIVIDER: Returns → Outcome ═══════ -->
+<div class="cinematic-divider reveal">
+  <img src="divider-pool-sunset.png" alt="Luxury environment with mountain vista" loading="lazy">
+</div>
 
 <!-- ═══════ PORTFOLIO OUTCOME ═══════ -->
 <section>
@@ -1076,19 +1416,37 @@ section { padding: 64px 0 40px; }
     <div class="outcome-grid">
       <div class="outcome-item">
         <div class="oi-num">3</div>
-        <div class="oi-label">Geographies with low intra-portfolio correlation (US / UK / SEA)</div>
+        <div class="oi-label">Geographies with low intra-portfolio correlation</div>
+        <div class="oi-badges">
+          <span class="oi-badge" style="border-color:var(--jh);color:var(--jh);">US</span>
+          <span class="oi-badge" style="border-color:var(--lon);color:var(--lon);">UK</span>
+          <span class="oi-badge" style="border-color:var(--bali);color:var(--bali);">SEA</span>
+        </div>
       </div>
       <div class="outcome-item">
         <div class="oi-num">3</div>
-        <div class="oi-label">Distinct use cases (Residential / Hospitality / Office)</div>
+        <div class="oi-label">Distinct use cases</div>
+        <div class="oi-badges">
+          <span class="oi-badge" style="border-color:var(--jh);color:var(--jh);">Residential</span>
+          <span class="oi-badge" style="border-color:var(--bali);color:var(--bali);">Hospitality</span>
+          <span class="oi-badge" style="border-color:var(--lon);color:var(--lon);">Office</span>
+        </div>
       </div>
       <div class="outcome-item">
         <div class="oi-num">3</div>
-        <div class="oi-label">Return types in one vehicle (Dev / Yield / Recovery)</div>
+        <div class="oi-label">Return types in one vehicle</div>
+        <div class="oi-badges">
+          <span class="oi-badge" style="border-color:var(--jh);color:var(--jh);">Development</span>
+          <span class="oi-badge" style="border-color:var(--bali);color:var(--bali);">Yield</span>
+          <span class="oi-badge" style="border-color:var(--lon);color:var(--lon);">Recovery</span>
+        </div>
       </div>
       <div class="outcome-item">
         <div class="oi-num">1</div>
-        <div class="oi-label">Unified demand driver (AI wealth creation cycle)</div>
+        <div class="oi-label">Unified demand driver</div>
+        <div class="oi-badges">
+          <span class="oi-badge" style="border-color:var(--accent);color:var(--accent);">AI wealth creation cycle</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1096,15 +1454,15 @@ section { padding: 64px 0 40px; }
   <div class="div-grid reveal">
     <div class="div-card">
       <div class="dc-label" style="color:var(--jh);">Geographic</div>
-      <p>United States, United Kingdom, Southeast Asia — uncorrelated macro environments reduce portfolio-level volatility and concentration risk.</p>
+      <p>United States, United Kingdom, Southeast Asia. Uncorrelated macro environments reduce portfolio-level volatility and concentration risk.</p>
     </div>
     <div class="div-card">
       <div class="dc-label" style="color:var(--bali);">Use Case</div>
-      <p>Residential development, operating hospitality, and stabilized commercial — each with distinct risk/return profiles and cash flow timing.</p>
+      <p>Residential development, operating hospitality, and stabilized commercial, each with distinct risk/return profiles and cash flow timing.</p>
     </div>
     <div class="div-card">
       <div class="dc-label" style="color:var(--lon);">Return Type</div>
-      <p>Development margin, operating yield, and recovery upside — blended to deliver more stable aggregate returns across market conditions.</p>
+      <p>Development margin, operating yield, and recovery upside, blended to deliver more stable aggregate returns across market conditions.</p>
     </div>
   </div>
 </section>
@@ -1128,13 +1486,68 @@ function scrollTo(sel) {
 // ─── SCROLL REVEAL ───
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
+}, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ─── NAV ACTIVE STATE ───
+// ─── PARALLAX FOR CINEMATIC DIVIDERS ───
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.cinematic-divider img, .cinematic-divider video').forEach(el => {
+        const rect = el.parentElement.getBoundingClientRect();
+        const speed = 0.25;
+        const yPos = -(rect.top * speed);
+        el.style.transform = `translateY(${yPos}px) scale(1.15)`;
+      });
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// ─── LAZY VIDEO PLAYBACK ───
+const videoObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    const video = e.target;
+    if (e.isIntersecting) {
+      if (video.preload === 'none') video.preload = 'auto';
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.cinematic-divider video').forEach(v => videoObserver.observe(v));
+
+// ─── ANIMATED NUMBER COUNTERS ───
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.animated) {
+      e.target.dataset.animated = '1';
+      const target = parseInt(e.target.textContent);
+      if (isNaN(target)) return;
+      const start = performance.now();
+      const duration = 1200;
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        e.target.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.oi-num').forEach(el => counterObserver.observe(el));
+
+// ─── NAV ACTIVE STATE + AUTO-HIDE ───
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
+const nav = document.querySelector('.nav');
+let lastScrollY = 0;
 window.addEventListener('scroll', () => {
+  // Active state
   let current = '';
   sections.forEach(s => {
     if (window.scrollY >= s.offsetTop - 200) current = s.id;
@@ -1143,6 +1556,13 @@ window.addEventListener('scroll', () => {
     l.classList.remove('active');
     if (l.getAttribute('onclick')?.includes(current)) l.classList.add('active');
   });
+  // Auto-hide on scroll down, show on scroll up
+  if (window.scrollY > 300) {
+    nav.style.transform = window.scrollY > lastScrollY ? 'translateY(-100%)' : 'translateY(0)';
+  } else {
+    nav.style.transform = 'translateY(0)';
+  }
+  lastScrollY = window.scrollY;
 });
 
 // ─── THEME TOGGLE ───
@@ -1165,6 +1585,22 @@ function toggleTheme() {
 function toggleEra(el) { el.classList.toggle('open'); }
 function toggleTw(el) { el.classList.toggle('open'); }
 function toggleAsset(el) { el.classList.toggle('open'); }
+
+// ─── MAP LAYER TOGGLES ───
+function toggleMapLayer(layer) {
+  const btn = document.querySelector(`.ml-toggle[data-layer="${layer}"]`);
+  btn.classList.toggle('active');
+  const visible = btn.classList.contains('active');
+  const mapSvg = d3.select('#map-wrap svg');
+  if (layer === 'hubs') {
+    mapSvg.select('.map-hubs').style('opacity', visible ? 1 : 0).style('pointer-events', visible ? 'all' : 'none');
+  } else if (layer === 'flows') {
+    mapSvg.select('.map-flows').style('opacity', visible ? 1 : 0);
+  } else {
+    mapSvg.select(`.map-dest-${layer}`).style('opacity', visible ? 1 : 0).style('pointer-events', visible ? 'all' : 'none');
+    mapSvg.selectAll(`.flow-to-${layer}`).style('opacity', visible ? 0.6 : 0);
+  }
+}
 
 // ─── D3 MAP ───
 const W = 1016, H = 420;
@@ -1195,11 +1631,11 @@ const svg = d3.select("#map-wrap").append("svg")
 
 const defs = svg.append("defs");
 const glow = defs.append("filter").attr("id","glow").attr("x","-50%").attr("y","-50%").attr("width","200%").attr("height","200%");
-glow.append("feGaussianBlur").attr("stdDeviation","2.5").attr("result","b");
+glow.append("feGaussianBlur").attr("stdDeviation","4").attr("result","b");
 const gm = glow.append("feMerge"); gm.append("feMergeNode").attr("in","b"); gm.append("feMergeNode").attr("in","SourceGraphic");
 
 const sg = defs.append("filter").attr("id","sg").attr("x","-100%").attr("y","-100%").attr("width","300%").attr("height","300%");
-sg.append("feGaussianBlur").attr("stdDeviation","7").attr("result","b");
+sg.append("feGaussianBlur").attr("stdDeviation","12").attr("result","b");
 const sgm = sg.append("feMerge"); sgm.append("feMergeNode").attr("in","b"); sgm.append("feMergeNode").attr("in","SourceGraphic");
 
 svg.append("path").datum(grat()).attr("d",pathGen).attr("class","graticule");
@@ -1231,7 +1667,7 @@ function drawMap(){
     dc[d.id]=d.id==="clon"?[c[0]+14,c[1]-16]:c;
   });
 
-  const fg=svg.append("g");
+  const fg=svg.append("g").attr("class","map-flows");
 
   FLOWS.forEach((f,i)=>{
     const [x1,y1]=hc[f.from],[x2,y2]=dc[f.to];
@@ -1243,21 +1679,22 @@ function drawMap(){
     const gid=`fg-${f.from}-${f.to}`;
     const grad=defs.append("linearGradient").attr("id",gid)
       .attr("gradientUnits","userSpaceOnUse").attr("x1",x1).attr("y1",y1).attr("x2",x2).attr("y2",y2);
-    grad.append("stop").attr("offset","0%").attr("stop-color","#708098").attr("stop-opacity",0.3);
-    grad.append("stop").attr("offset","100%").attr("stop-color",dest.color).attr("stop-opacity",0.4);
+    grad.append("stop").attr("offset","0%").attr("stop-color","#708098").attr("stop-opacity",0.5);
+    grad.append("stop").attr("offset","100%").attr("stop-color",dest.color).attr("stop-opacity",0.6);
 
     const pathEl=fg.append("path").attr("d",pd).attr("fill","none")
-      .attr("stroke",`url(#${gid})`).attr("stroke-width",0.5+f.w*0.12)
-      .attr("stroke-dasharray","2.5 3.5").attr("opacity",0.5);
+      .attr("stroke",`url(#${gid})`).attr("stroke-width",0.6+f.w*0.15)
+      .attr("stroke-dasharray","2.5 3.5").attr("opacity",0.6)
+      .attr("class",`flow-to-${f.to}`);
 
-    for(let p=0;p<Math.min(f.w,2);p++){
-      const particle=fg.append("circle").attr("r",1.8)
+    for(let p=0;p<Math.min(f.w,3);p++){
+      const particle=fg.append("circle").attr("r",2.5)
         .attr("fill",dest.color).attr("opacity",0).attr("filter","url(#glow)");
-      animP(particle,pathEl.node(),p*1500,3500+p*400);
+      animP(particle,pathEl.node(),p*1200,3200+p*350);
     }
   });
 
-  const mg=svg.append("g");
+  const mg=svg.append("g").attr("class","map-hubs");
   HUBS.forEach(h=>{
     const [cx,cy]=hc[h.id];
     const g=mg.append("g").style("cursor","pointer");
@@ -1268,36 +1705,36 @@ function drawMap(){
     animRing(pulse);
     g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",7)
       .attr("fill","none").attr("stroke","#708098").attr("stroke-width",0.4).attr("opacity",0.18);
-    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",3)
-      .attr("fill","#708098").attr("opacity",0.6);
-    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",1.2)
-      .attr("fill","#d0d6df").attr("opacity",0.7);
-    g.append("text").attr("x",cx).attr("y",cy-12)
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",4)
+      .attr("fill","#708098").attr("opacity",0.7);
+    g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",1.5)
+      .attr("fill","#d0d6df").attr("opacity",0.8);
+    g.append("text").attr("x",cx).attr("y",cy-14)
       .attr("text-anchor","middle").attr("fill","#708098")
-      .attr("font-size","7.5px").attr("font-weight","600")
+      .attr("font-size","8.5px").attr("font-weight","600")
       .attr("font-family","Inter,sans-serif").text(h.name);
     g.on("mouseenter",function(evt){
       showTip(evt,`<div class="tt-name">${h.name}</div><div style="color:#586070;">${h.sub}</div><div class="tt-val" style="color:#708098;">${h.wealth} AI-generated wealth</div><div style="color:#586070;">${h.detail}</div>`);
     }).on("mousemove",moveTip).on("mouseleave",hideTip);
   });
 
-  const dg=svg.append("g");
+  const dg=svg.append("g").attr("class","map-dests");
   DESTS.forEach(d=>{
     const [cx,cy]=dc[d.id];
-    const g=dg.append("g").style("cursor","pointer");
+    const g=dg.append("g").style("cursor","pointer").attr("class",`map-dest-${d.id}`);
     g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",16)
       .attr("fill",d.color).attr("opacity",0.025).attr("filter","url(#sg)");
     const pulse=g.append("circle").attr("cx",cx).attr("cy",cy).attr("r",9)
       .attr("fill","none").attr("stroke",d.color).attr("stroke-width",0.5).attr("opacity",0);
     animRing(pulse,2200);
-    const s=5;
+    const s=7;
     g.append("rect").attr("x",cx-s/2).attr("y",cy-s/2).attr("width",s).attr("height",s)
-      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill",d.color).attr("opacity",0.75);
-    g.append("rect").attr("x",cx-2).attr("y",cy-2).attr("width",4).attr("height",4)
-      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill","#e4e8ee").attr("opacity",0.3);
-    g.append("text").attr("x",cx).attr("y",cy-11)
+      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill",d.color).attr("opacity",0.8);
+    g.append("rect").attr("x",cx-2.5).attr("y",cy-2.5).attr("width",5).attr("height",5)
+      .attr("transform",`rotate(45,${cx},${cy})`).attr("fill","#e4e8ee").attr("opacity",0.35);
+    g.append("text").attr("x",cx).attr("y",cy-13)
       .attr("text-anchor","middle").attr("fill",d.color)
-      .attr("font-size","8px").attr("font-weight","700")
+      .attr("font-size","9px").attr("font-weight","700")
       .attr("font-family","Inter,sans-serif").text(d.name);
     g.on("mouseenter",function(evt){
       showTip(evt,`<div class="tt-name">${d.name}</div><div style="color:#586070;">Destination market</div>`);
@@ -1317,16 +1754,16 @@ function animP(c,p,delay,dur){
 }
 function animRing(c,dur=2600){
   function run(){
-    c.attr("r",7).attr("opacity",0.25)
+    c.attr("r",8).attr("opacity",0.3)
       .transition().duration(dur).ease(d3.easeCubicOut)
-      .attr("r",18).attr("opacity",0)
+      .attr("r",24).attr("opacity",0)
       .on("end",run);
   }
   run();
 }
 
 // ═══════════════════════════════════════
-// CHARTS — Pattern Era Mini Charts
+// CHARTS: Pattern Era Mini Charts
 // ═══════════════════════════════════════
 
 function drawAreaChart(containerId, data, opts) {
@@ -1365,12 +1802,13 @@ function drawAreaChart(containerId, data, opts) {
     .x(d=>x(d.year)+x.bandwidth()/2)
     .y0(h)
     .y1(d=>y(d.value))
-    .curve(d3.curveMonotoneX);
+    .curve(d3.curveCatmullRom.alpha(0.5));
 
   const areaGrad = svg.append("defs").append("linearGradient")
     .attr("id",`ag-${containerId}`).attr("x1","0").attr("y1","0").attr("x2","0").attr("y2","1");
-  areaGrad.append("stop").attr("offset","0%").attr("stop-color",color).attr("stop-opacity",0.15);
-  areaGrad.append("stop").attr("offset","100%").attr("stop-color",color).attr("stop-opacity",0.01);
+  areaGrad.append("stop").attr("offset","0%").attr("stop-color",color).attr("stop-opacity",0.25);
+  areaGrad.append("stop").attr("offset","40%").attr("stop-color",color).attr("stop-opacity",0.12);
+  areaGrad.append("stop").attr("offset","100%").attr("stop-color",color).attr("stop-opacity",0.02);
 
   g.append("path").datum(data).attr("d",area)
     .attr("fill",`url(#ag-${containerId})`);
@@ -1379,17 +1817,60 @@ function drawAreaChart(containerId, data, opts) {
   const line = d3.line()
     .x(d=>x(d.year)+x.bandwidth()/2)
     .y(d=>y(d.value))
-    .curve(d3.curveMonotoneX);
+    .curve(d3.curveCatmullRom.alpha(0.5));
 
+  // Line glow (behind)
   g.append("path").datum(data).attr("d",line)
-    .attr("fill","none").attr("stroke",color).attr("stroke-width",1.5).attr("opacity",0.7);
+    .attr("fill","none").attr("stroke",color).attr("stroke-width",4).attr("opacity",0.12)
+    .style("filter","blur(3px)");
 
-  // Dots
+  // Main line with draw animation
+  const lineEl = g.append("path").datum(data).attr("d",line)
+    .attr("fill","none").attr("stroke",color).attr("stroke-width",1.5).attr("opacity",0.8);
+
+  // Animate line drawing
+  try {
+    const totalLength = lineEl.node().getTotalLength();
+    lineEl.attr("stroke-dasharray", totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition().duration(1500).ease(d3.easeCubicOut)
+      .attr("stroke-dashoffset", 0);
+  } catch(e) {}
+
+  // Chart tooltip
+  let chartTip = container.querySelector('.chart-tip');
+  if (!chartTip) {
+    chartTip = document.createElement('div');
+    chartTip.className = 'chart-tip';
+    container.style.position = 'relative';
+    container.appendChild(chartTip);
+  }
+
+  // Dots with staggered reveal + hover tooltips
   g.selectAll(".dot").data(data).enter().append("circle")
     .attr("cx",d=>x(d.year)+x.bandwidth()/2)
     .attr("cy",d=>y(d.value))
-    .attr("r", d => (projected && d.projected) ? 0 : 2.5)
-    .attr("fill",color).attr("opacity",0.8);
+    .attr("r", 0)
+    .attr("fill",color).attr("opacity",0.8)
+    .style("cursor","pointer")
+    .on("mouseenter", function(evt, d) {
+      d3.select(this).transition().duration(150).attr("r", 5).attr("opacity", 1);
+      const val = yFormat ? yFormat(d.value) : d.value;
+      chartTip.textContent = `${d.year}: ${val}`;
+      chartTip.classList.add('visible');
+    })
+    .on("mousemove", function(evt) {
+      const rect = container.getBoundingClientRect();
+      chartTip.style.left = (evt.clientX - rect.left + 12) + 'px';
+      chartTip.style.top = (evt.clientY - rect.top - 28) + 'px';
+    })
+    .on("mouseleave", function(evt, d) {
+      const finalR = (projected && d.projected) ? 0 : 2.5;
+      d3.select(this).transition().duration(150).attr("r", finalR).attr("opacity", 0.8);
+      chartTip.classList.remove('visible');
+    })
+    .transition().delay((d,i) => 800 + i * 80).duration(400).ease(d3.easeCubicOut)
+    .attr("r", d => (projected && d.projected) ? 0 : 2.5);
 
   // Projected dots (hollow)
   if (projected) {
@@ -1487,7 +1968,7 @@ const aiOpts = {color:"#708098", yFormat: d => `$${d}T`, annotationX:"2026", ann
 
 
 // ═══════════════════════════════════════
-// EVIDENCE CHARTS — Full Width Section
+// EVIDENCE CHARTS: Full Width Section
 // ═══════════════════════════════════════
 
 // Jackson Hole evidence
