@@ -351,12 +351,12 @@ section { padding: 48px 0 32px; }
 
 /* ─── ASSETS ─── */
 .assets-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  display: grid; grid-template-columns: 1fr; gap: 1px;
   background: var(--border); border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border);
 }
 .asset-card {
-  background: var(--surface); padding: 32px 24px;
+  background: var(--surface); padding: 32px 28px;
   transition: background 0.3s; cursor: pointer;
 }
 .asset-card:hover { background: var(--surface2); transform: translateY(-1px); }
@@ -403,7 +403,7 @@ section { padding: 48px 0 32px; }
 
 /* ─── ASSET CARD IMAGES ─── */
 .ac-img {
-  margin: -32px -24px 20px -24px; height: 220px; overflow: hidden;
+  margin: -32px -28px 20px -28px; height: 280px; overflow: hidden;
   position: relative;
 }
 .ac-img img {
@@ -595,7 +595,11 @@ section { padding: 48px 0 32px; }
   border: 1px solid var(--border);
 }
 .evidence-card {
-  background: var(--surface); padding: 24px 20px;
+  background: var(--surface); padding: 28px 32px;
+  display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start;
+}
+@media (max-width: 768px) {
+  .evidence-card { grid-template-columns: 1fr; padding: 20px 16px; }
 }
 .evidence-card .ec-title {
   font-size: 9px; font-weight: 700; text-transform: uppercase;
@@ -618,6 +622,7 @@ section { padding: 48px 0 32px; }
 .evidence-card .ec-stat {
   display: flex; justify-content: space-between; align-items: baseline;
   margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border);
+  grid-column: 1 / -1;
 }
 .ec-stat .ec-big { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; transition: transform 0.3s; }
 .evidence-card:hover .ec-big { transform: scale(1.05); }
@@ -769,7 +774,6 @@ section { padding: 48px 0 32px; }
 }
 /* ═══════ RESPONSIVE ═══════ */
 @media (max-width: 1200px) {
-  .assets-grid { grid-template-columns: 1fr; }
   .timing-grid { grid-template-columns: 1fr; }
   .div-grid { grid-template-columns: 1fr; }
 }
@@ -828,7 +832,6 @@ section { padding: 48px 0 32px; }
   .flow-stage .fs-step { font-size: 22px; }
 
   /* Assets */
-  .assets-grid { grid-template-columns: 1fr; }
   .asset-card { padding: 24px 18px; }
   .ac-img { margin: -24px -18px 16px -18px; height: 200px; }
   .ac-name { font-size: 16px; }
@@ -895,7 +898,7 @@ section { padding: 48px 0 32px; }
 </div><!-- close .page for full-bleed hero -->
 <section class="hero" id="hero">
   <video class="hero-video" autoplay muted loop playsinline poster="mayfairbuildingroof.jpg">
-    <source src="hero-video.mp4" type="video/mp4">
+    <source src="luxury-loop-2.mp4" type="video/mp4">
   </video>
   <div class="hero-kicker">Investment Thesis</div>
   <h1><strong>Every tech wealth cycle</strong> reshapes real estate.<br>This is the AI cycle.</h1>
@@ -1161,7 +1164,7 @@ section { padding: 48px 0 32px; }
 <!-- ═══════ DIVIDER: Evidence → Structure ═══════ -->
 <div class="cinematic-divider reveal">
   <video autoplay muted loop playsinline preload="none">
-    <source src="luxury-loop-hq.mp4" type="video/mp4">
+    <source src="luxury-loop-1.mp4" type="video/mp4">
   </video>
 </div>
 
