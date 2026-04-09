@@ -110,7 +110,7 @@ body {
 
 /* ─── LAYOUT ─── */
 .page { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
-section { padding: 64px 0 40px; }
+section { padding: 48px 0 32px; }
 
 /* ─── HERO ─── */
 .hero {
@@ -590,7 +590,7 @@ section { padding: 64px 0 40px; }
 /* ─── EVIDENCE CHARTS (full width) ─── */
 .evidence-section { margin-bottom: 32px; }
 .evidence-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+  display: grid; grid-template-columns: 1fr; gap: 1px;
   background: var(--border); border-radius: 12px; overflow: hidden;
   border: 1px solid var(--border);
 }
@@ -675,7 +675,7 @@ section { padding: 64px 0 40px; }
 .cinematic-divider {
   position: relative;
   width: 100vw; margin-left: calc(-50vw + 50%);
-  height: 40vh; min-height: 300px;
+  height: 30vh; min-height: 240px;
   overflow: hidden;
 }
 .cinematic-divider img,
@@ -770,7 +770,6 @@ section { padding: 64px 0 40px; }
 /* ═══════ RESPONSIVE ═══════ */
 @media (max-width: 1200px) {
   .assets-grid { grid-template-columns: 1fr; }
-  .evidence-grid { grid-template-columns: 1fr; }
   .timing-grid { grid-template-columns: 1fr; }
   .div-grid { grid-template-columns: 1fr; }
 }
@@ -819,7 +818,6 @@ section { padding: 64px 0 40px; }
   .ml-toggle { padding: 3px 6px; }
 
   /* Evidence */
-  .evidence-grid { grid-template-columns: 1fr; }
   .evidence-card { padding: 20px 16px; }
   .ec-stat .ec-big { font-size: 22px; }
 
@@ -1163,7 +1161,7 @@ section { padding: 64px 0 40px; }
 <!-- ═══════ DIVIDER: Evidence → Structure ═══════ -->
 <div class="cinematic-divider reveal">
   <video autoplay muted loop playsinline preload="none">
-    <source src="luxury-loop-1.mp4" type="video/mp4">
+    <source src="luxury-loop-hq.mp4" type="video/mp4">
   </video>
 </div>
 
@@ -1401,7 +1399,7 @@ section { padding: 64px 0 40px; }
 
 <!-- ═══════ DIVIDER: Returns → Outcome ═══════ -->
 <div class="cinematic-divider reveal">
-  <img src="divider-pool-sunset.png" alt="Luxury environment with mountain vista" loading="lazy">
+  <img src="divider-mountain-pool.png" alt="Luxury mountain infinity pool" loading="lazy">
 </div>
 
 <!-- ═══════ PORTFOLIO OUTCOME ═══════ -->
